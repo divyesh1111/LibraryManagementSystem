@@ -1,0 +1,34 @@
+## .NET Core
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+## VS Code
+.vscode/
+
+## Visual Studio
+.vs/
+*.sln.docstates
+
+## Database
+*.db
+*.db-shm
+*.db-wal
+
+## User secrets
+secrets.json
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+
+## NuGet
+*.nupkg
+**/packages/*
+
+## OS Files
+.DS_Store
+Thumbs.db
