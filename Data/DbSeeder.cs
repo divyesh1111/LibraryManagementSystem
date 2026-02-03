@@ -9,12 +9,82 @@ namespace LibraryManagementSystem.Data
         {
             if (await context.Authors.AnyAsync())
             {
-                return; 
+                return;
             }
 
+            // Seed Library Branches first (needed for Book foreign key)
+            var branches = GetLibraryBranches();
+            await context.LibraryBranches.AddRangeAsync(branches);
+            await context.SaveChangesAsync();
+
+            // Seed Authors
             var authors = GetAuthors();
             await context.Authors.AddRangeAsync(authors);
             await context.SaveChangesAsync();
+
+            // Seed Books
+            var books = GetBooks();
+            await context.Books.AddRangeAsync(books);
+            await context.SaveChangesAsync();
+        }
+
+        private static List<LibraryBranch> GetLibraryBranches()
+        {
+            return new List<LibraryBranch>
+            {
+                new LibraryBranch { BranchName = "Central Library", Address = "123 Main Street", City = "New York", State = "NY", PostalCode = "10001", PhoneNumber = "+1-212-555-0101", Email = "central@library.com", OpeningHours = "Mon-Sat: 9AM-9PM, Sun: 10AM-6PM" },
+                new LibraryBranch { BranchName = "Downtown Branch", Address = "456 Commerce Ave", City = "New York", State = "NY", PostalCode = "10002", PhoneNumber = "+1-212-555-0102", Email = "downtown@library.com", OpeningHours = "Mon-Fri: 8AM-8PM" },
+                new LibraryBranch { BranchName = "Westside Community Library", Address = "789 Oak Boulevard", City = "Los Angeles", State = "CA", PostalCode = "90001", PhoneNumber = "+1-310-555-0103", Email = "westside@library.com", OpeningHours = "Mon-Sat: 10AM-8PM" },
+                new LibraryBranch { BranchName = "Eastgate Library", Address = "321 Pine Street", City = "Chicago", State = "IL", PostalCode = "60601", PhoneNumber = "+1-312-555-0104", Email = "eastgate@library.com", OpeningHours = "Mon-Fri: 9AM-7PM" },
+                new LibraryBranch { BranchName = "University District Library", Address = "555 College Road", City = "Boston", State = "MA", PostalCode = "02101", PhoneNumber = "+1-617-555-0105", Email = "university@library.com", OpeningHours = "Mon-Sun: 7AM-11PM" },
+                new LibraryBranch { BranchName = "Suburban Hills Branch", Address = "888 Valley Drive", City = "San Francisco", State = "CA", PostalCode = "94101", PhoneNumber = "+1-415-555-0106", Email = "suburban@library.com", OpeningHours = "Mon-Sat: 9AM-6PM" },
+                new LibraryBranch { BranchName = "Riverside Reading Center", Address = "222 River Road", City = "Portland", State = "OR", PostalCode = "97201", PhoneNumber = "+1-503-555-0107", Email = "riverside@library.com", OpeningHours = "Mon-Fri: 10AM-7PM" },
+                new LibraryBranch { BranchName = "Heritage Branch", Address = "444 Historic Lane", City = "Philadelphia", State = "PA", PostalCode = "19101", PhoneNumber = "+1-215-555-0108", Email = "heritage@library.com", OpeningHours = "Mon-Sat: 9AM-5PM" },
+                new LibraryBranch { BranchName = "Modern Media Library", Address = "666 Digital Drive", City = "Seattle", State = "WA", PostalCode = "98101", PhoneNumber = "+1-206-555-0109", Email = "modern@library.com", OpeningHours = "Mon-Sun: 8AM-10PM" },
+                new LibraryBranch { BranchName = "Children's Discovery Library", Address = "777 Rainbow Street", City = "Denver", State = "CO", PostalCode = "80201", PhoneNumber = "+1-303-555-0110", Email = "children@library.com", OpeningHours = "Mon-Sat: 9AM-6PM" },
+                new LibraryBranch { BranchName = "Tech Hub Library", Address = "999 Innovation Way", City = "Austin", State = "TX", PostalCode = "73301", PhoneNumber = "+1-512-555-0111", Email = "techhub@library.com", OpeningHours = "Mon-Fri: 8AM-9PM" },
+                new LibraryBranch { BranchName = "Arts & Culture Library", Address = "111 Gallery Avenue", City = "Miami", State = "FL", PostalCode = "33101", PhoneNumber = "+1-305-555-0112", Email = "arts@library.com", OpeningHours = "Tue-Sun: 10AM-8PM" },
+                new LibraryBranch { BranchName = "Lakeside Branch", Address = "333 Shore Drive", City = "Minneapolis", State = "MN", PostalCode = "55401", PhoneNumber = "+1-612-555-0113", Email = "lakeside@library.com", OpeningHours = "Mon-Sat: 9AM-7PM" },
+                new LibraryBranch { BranchName = "Mountain View Library", Address = "555 Peak Road", City = "Salt Lake City", State = "UT", PostalCode = "84101", PhoneNumber = "+1-801-555-0114", Email = "mountain@library.com", OpeningHours = "Mon-Fri: 9AM-6PM" },
+                new LibraryBranch { BranchName = "Historic Downtown Library", Address = "777 Old Town Square", City = "San Diego", State = "CA", PostalCode = "92101", PhoneNumber = "+1-619-555-0115", Email = "historic@library.com", OpeningHours = "Mon-Sat: 10AM-6PM" },
+                new LibraryBranch { BranchName = "Garden District Library", Address = "888 Bloom Street", City = "New Orleans", State = "LA", PostalCode = "70112", PhoneNumber = "+1-504-555-0116", Email = "garden@library.com", OpeningHours = "Tue-Sat: 9AM-5PM" },
+                new LibraryBranch { BranchName = "Academic Resource Center", Address = "100 Scholar Lane", City = "Ann Arbor", State = "MI", PostalCode = "48104", PhoneNumber = "+1-734-555-0117", Email = "academic@library.com", OpeningHours = "Mon-Sun: 6AM-12AM" },
+                new LibraryBranch { BranchName = "Community Connect Library", Address = "200 Unity Plaza", City = "Nashville", State = "TN", PostalCode = "37201", PhoneNumber = "+1-615-555-0118", Email = "connect@library.com", OpeningHours = "Mon-Sat: 8AM-8PM" },
+                new LibraryBranch { BranchName = "Innovation Station Library", Address = "300 Future Boulevard", City = "Phoenix", State = "AZ", PostalCode = "85001", PhoneNumber = "+1-602-555-0119", Email = "innovation@library.com", OpeningHours = "Mon-Fri: 7AM-9PM" },
+                new LibraryBranch { BranchName = "Sunset Branch", Address = "400 Evening Star Drive", City = "Las Vegas", State = "NV", PostalCode = "89101", PhoneNumber = "+1-702-555-0120", Email = "sunset@library.com", OpeningHours = "Mon-Sun: 10AM-10PM" }
+            };
+        }
+
+        private static List<Book> GetBooks()
+        {
+            return new List<Book>
+            {
+                new Book { Title = "The Shining", ISBN = "978-0-385-12167-5", Description = "A family heads to an isolated hotel for the winter where a sinister presence influences the father into violence.", PublicationDate = new DateTime(1977, 1, 28), Publisher = "Doubleday", PageCount = 447, Genre = "Horror", AuthorId = 1, LibraryBranchId = 1, AvailableCopies = 3, TotalCopies = 5 },
+                new Book { Title = "It", ISBN = "978-1-5011-4217-4", Description = "A group of children face a shape-shifting monster that exploits their fears.", PublicationDate = new DateTime(1986, 9, 15), Publisher = "Viking", PageCount = 1138, Genre = "Horror", AuthorId = 1, LibraryBranchId = 1, AvailableCopies = 2, TotalCopies = 4 },
+                new Book { Title = "Harry Potter and the Sorcerer's Stone", ISBN = "978-0-590-35340-3", Description = "A young wizard discovers his magical heritage on his eleventh birthday.", PublicationDate = new DateTime(1997, 6, 26), Publisher = "Scholastic", PageCount = 309, Genre = "Fantasy", AuthorId = 2, LibraryBranchId = 2, AvailableCopies = 5, TotalCopies = 7 },
+                new Book { Title = "Harry Potter and the Chamber of Secrets", ISBN = "978-0-439-06487-3", Description = "Harry returns to Hogwarts for his second year and faces new dangers.", PublicationDate = new DateTime(1998, 7, 2), Publisher = "Scholastic", PageCount = 341, Genre = "Fantasy", AuthorId = 2, LibraryBranchId = 2, AvailableCopies = 4, TotalCopies = 6 },
+                new Book { Title = "1984", ISBN = "978-0-452-28423-4", Description = "A dystopian novel set in a totalitarian society ruled by Big Brother.", PublicationDate = new DateTime(1949, 6, 8), Publisher = "Secker & Warburg", PageCount = 328, Genre = "Dystopian", AuthorId = 3, LibraryBranchId = 3, AvailableCopies = 6, TotalCopies = 8 },
+                new Book { Title = "Animal Farm", ISBN = "978-0-451-52634-2", Description = "A satirical allegory of Soviet totalitarianism.", PublicationDate = new DateTime(1945, 8, 17), Publisher = "Secker & Warburg", PageCount = 112, Genre = "Satire", AuthorId = 3, LibraryBranchId = 3, AvailableCopies = 4, TotalCopies = 5 },
+                new Book { Title = "Pride and Prejudice", ISBN = "978-0-14-143951-8", Description = "A romantic novel following Elizabeth Bennet as she deals with issues of manners and morality.", PublicationDate = new DateTime(1813, 1, 28), Publisher = "T. Egerton", PageCount = 432, Genre = "Romance", AuthorId = 4, LibraryBranchId = 4, AvailableCopies = 3, TotalCopies = 5 },
+                new Book { Title = "The Adventures of Tom Sawyer", ISBN = "978-0-14-036673-4", Description = "A boy growing up along the Mississippi River in the mid-1800s.", PublicationDate = new DateTime(1876, 6, 1), Publisher = "American Publishing Company", PageCount = 274, Genre = "Adventure", AuthorId = 5, LibraryBranchId = 5, AvailableCopies = 2, TotalCopies = 4 },
+                new Book { Title = "The Old Man and the Sea", ISBN = "978-0-684-80122-3", Description = "An aging Cuban fisherman struggles with a giant marlin.", PublicationDate = new DateTime(1952, 9, 1), Publisher = "Charles Scribner's Sons", PageCount = 127, Genre = "Literary Fiction", AuthorId = 6, LibraryBranchId = 6, AvailableCopies = 3, TotalCopies = 4 },
+                new Book { Title = "Murder on the Orient Express", ISBN = "978-0-06-269366-2", Description = "Detective Hercule Poirot investigates a murder on a train.", PublicationDate = new DateTime(1934, 1, 1), Publisher = "Collins Crime Club", PageCount = 256, Genre = "Mystery", AuthorId = 7, LibraryBranchId = 7, AvailableCopies = 4, TotalCopies = 6 },
+                new Book { Title = "A Tale of Two Cities", ISBN = "978-0-14-143960-0", Description = "A historical novel set during the French Revolution.", PublicationDate = new DateTime(1859, 4, 30), Publisher = "Chapman & Hall", PageCount = 489, Genre = "Historical Fiction", AuthorId = 8, LibraryBranchId = 8, AvailableCopies = 2, TotalCopies = 4 },
+                new Book { Title = "War and Peace", ISBN = "978-0-14-044793-4", Description = "An epic novel of Russian society during the Napoleonic Era.", PublicationDate = new DateTime(1869, 1, 1), Publisher = "The Russian Messenger", PageCount = 1225, Genre = "Historical Fiction", AuthorId = 9, LibraryBranchId = 9, AvailableCopies = 1, TotalCopies = 3 },
+                new Book { Title = "One Hundred Years of Solitude", ISBN = "978-0-06-088328-7", Description = "The multi-generational story of the Buendía family.", PublicationDate = new DateTime(1967, 5, 30), Publisher = "Harper & Row", PageCount = 417, Genre = "Magical Realism", AuthorId = 10, LibraryBranchId = 10, AvailableCopies = 3, TotalCopies = 5 },
+                new Book { Title = "Crime and Punishment", ISBN = "978-0-14-044913-6", Description = "A psychological drama about a man who commits a murder.", PublicationDate = new DateTime(1866, 1, 1), Publisher = "The Russian Messenger", PageCount = 671, Genre = "Psychological Fiction", AuthorId = 11, LibraryBranchId = 11, AvailableCopies = 2, TotalCopies = 4 },
+                new Book { Title = "Mrs Dalloway", ISBN = "978-0-15-662870-9", Description = "A day in the life of Clarissa Dalloway in post-World War I England.", PublicationDate = new DateTime(1925, 5, 14), Publisher = "Hogarth Press", PageCount = 194, Genre = "Modernist", AuthorId = 12, LibraryBranchId = 12, AvailableCopies = 2, TotalCopies = 3 },
+                new Book { Title = "The Metamorphosis", ISBN = "978-0-393-34709-8", Description = "A man wakes up to find himself transformed into a giant insect.", PublicationDate = new DateTime(1915, 10, 1), Publisher = "Kurt Wolff Verlag", PageCount = 201, Genre = "Absurdist Fiction", AuthorId = 13, LibraryBranchId = 13, AvailableCopies = 3, TotalCopies = 4 },
+                new Book { Title = "The Picture of Dorian Gray", ISBN = "978-0-14-143957-0", Description = "A man remains young while his portrait ages.", PublicationDate = new DateTime(1890, 7, 1), Publisher = "Lippincott's Monthly Magazine", PageCount = 254, Genre = "Gothic Fiction", AuthorId = 14, LibraryBranchId = 14, AvailableCopies = 4, TotalCopies = 5 },
+                new Book { Title = "To Kill a Mockingbird", ISBN = "978-0-06-112008-4", Description = "A young girl in the Depression-era South witnesses her father defend a black man.", PublicationDate = new DateTime(1960, 7, 11), Publisher = "J. B. Lippincott & Co.", PageCount = 281, Genre = "Southern Gothic", AuthorId = 15, LibraryBranchId = 15, AvailableCopies = 5, TotalCopies = 7 },
+                new Book { Title = "The Great Gatsby", ISBN = "978-0-7432-7356-5", Description = "A story of the mysteriously wealthy Jay Gatsby and his love for Daisy Buchanan.", PublicationDate = new DateTime(1925, 4, 10), Publisher = "Charles Scribner's Sons", PageCount = 180, Genre = "Literary Fiction", AuthorId = 16, LibraryBranchId = 16, AvailableCopies = 4, TotalCopies = 6 },
+                new Book { Title = "A Game of Thrones", ISBN = "978-0-553-38168-3", Description = "Noble families vie for control of the Iron Throne.", PublicationDate = new DateTime(1996, 8, 1), Publisher = "Bantam Spectra", PageCount = 694, Genre = "Fantasy", AuthorId = 17, LibraryBranchId = 17, AvailableCopies = 3, TotalCopies = 5 },
+                new Book { Title = "The Lord of the Rings: The Fellowship of the Ring", ISBN = "978-0-618-00222-8", Description = "A hobbit inherits a ring of immense power.", PublicationDate = new DateTime(1954, 7, 29), Publisher = "Allen & Unwin", PageCount = 423, Genre = "Fantasy", AuthorId = 18, LibraryBranchId = 18, AvailableCopies = 4, TotalCopies = 6 },
+                new Book { Title = "The Da Vinci Code", ISBN = "978-0-385-50420-1", Description = "A symbologist uncovers a religious mystery.", PublicationDate = new DateTime(2003, 3, 18), Publisher = "Doubleday", PageCount = 454, Genre = "Thriller", AuthorId = 19, LibraryBranchId = 19, AvailableCopies = 5, TotalCopies = 7 },
+                new Book { Title = "The Alchemist", ISBN = "978-0-06-112241-5", Description = "A shepherd boy travels to Egypt in search of treasure.", PublicationDate = new DateTime(1988, 1, 1), Publisher = "HarperOne", PageCount = 208, Genre = "Fantasy", AuthorId = 20, LibraryBranchId = 20, AvailableCopies = 6, TotalCopies = 8 },
+                new Book { Title = "The Handmaid's Tale", ISBN = "978-0-385-49081-8", Description = "A dystopian novel set in a totalitarian theocracy.", PublicationDate = new DateTime(1985, 9, 17), Publisher = "McClelland & Stewart", PageCount = 311, Genre = "Dystopian", AuthorId = 21, LibraryBranchId = 1, AvailableCopies = 3, TotalCopies = 5 },
+                new Book { Title = "American Gods", ISBN = "978-0-06-055812-9", Description = "A man becomes embroiled in a conflict between old and new gods.", PublicationDate = new DateTime(2001, 6, 19), Publisher = "William Morrow", PageCount = 541, Genre = "Fantasy", AuthorId = 22, LibraryBranchId = 2, AvailableCopies = 2, TotalCopies = 4 }
+            };
         }
 
         private static List<Author> GetAuthors()
