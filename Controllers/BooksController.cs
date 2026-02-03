@@ -143,7 +143,6 @@ namespace LibraryManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Check if ISBN already exists
                 if (await _context.Books.AnyAsync(b => b.ISBN == viewModel.ISBN))
                 {
                     ModelState.AddModelError("ISBN", "A book with this ISBN already exists.");
@@ -174,7 +173,6 @@ namespace LibraryManagementSystem.Controllers
                 }
             }
 
-            // Reload dropdown lists
             viewModel.Authors = new SelectList(
                 await _context.Authors
                     .OrderBy(a => a.LastName)
@@ -251,7 +249,6 @@ namespace LibraryManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                // Check if ISBN already exists for another book
                 if (await _context.Books.AnyAsync(b => b.ISBN == viewModel.ISBN && b.Id != id))
                 {
                     ModelState.AddModelError("ISBN", "A book with this ISBN already exists.");
@@ -295,7 +292,6 @@ namespace LibraryManagementSystem.Controllers
                 }
             }
 
-            // Reload dropdown lists
             viewModel.Authors = new SelectList(
                 await _context.Authors
                     .OrderBy(a => a.LastName)
@@ -311,6 +307,62 @@ namespace LibraryManagementSystem.Controllers
                 "Id", "BranchName", viewModel.LibraryBranchId);
 
             return View(viewModel);
+        }
+
+        // GET: Books/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.LibraryBranch)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new BookDetailsViewModel
+            {
+                Id = book.Id,
+                Title = book.Title,
+                ISBN = book.ISBN,
+                Description = book.Description,
+                PublicationDate = book.PublicationDate,
+                Publisher = book.Publisher,
+                PageCount = book.PageCount,
+                Genre = book.Genre,
+                CoverImageUrl = book.CoverImageUrl,
+                AvailableCopies = book.AvailableCopies,
+                TotalCopies = book.TotalCopies,
+                CreatedDate = book.CreatedDate,
+                AuthorId = book.AuthorId,
+                AuthorName = book.Author != null ? $"{book.Author.FirstName} {book.Author.LastName}" : "Unknown",
+                LibraryBranchId = book.LibraryBranchId,
+                LibraryBranchName = book.LibraryBranch?.BranchName
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Books/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Book deleted successfully!";
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> BookExists(int id)
