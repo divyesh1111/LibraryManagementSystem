@@ -9,10 +9,10 @@ namespace LibraryManagementSystem.Data
         {
             if (await context.Authors.AnyAsync())
             {
-                return;
+                return; // Database already seeded
             }
 
-            // Seed Library Branches first (needed for Book foreign key)
+            // Seed Library Branches first (needed for foreign keys)
             var branches = GetLibraryBranches();
             await context.LibraryBranches.AddRangeAsync(branches);
             await context.SaveChangesAsync();
@@ -25,6 +25,11 @@ namespace LibraryManagementSystem.Data
             // Seed Books
             var books = GetBooks();
             await context.Books.AddRangeAsync(books);
+            await context.SaveChangesAsync();
+
+            // Seed Customers
+            var customers = GetCustomers();
+            await context.Customers.AddRangeAsync(customers);
             await context.SaveChangesAsync();
         }
 
@@ -52,6 +57,38 @@ namespace LibraryManagementSystem.Data
                 new LibraryBranch { BranchName = "Community Connect Library", Address = "200 Unity Plaza", City = "Nashville", State = "TN", PostalCode = "37201", PhoneNumber = "+1-615-555-0118", Email = "connect@library.com", OpeningHours = "Mon-Sat: 8AM-8PM" },
                 new LibraryBranch { BranchName = "Innovation Station Library", Address = "300 Future Boulevard", City = "Phoenix", State = "AZ", PostalCode = "85001", PhoneNumber = "+1-602-555-0119", Email = "innovation@library.com", OpeningHours = "Mon-Fri: 7AM-9PM" },
                 new LibraryBranch { BranchName = "Sunset Branch", Address = "400 Evening Star Drive", City = "Las Vegas", State = "NV", PostalCode = "89101", PhoneNumber = "+1-702-555-0120", Email = "sunset@library.com", OpeningHours = "Mon-Sun: 10AM-10PM" }
+            };
+        }
+
+        private static List<Author> GetAuthors()
+        {
+            return new List<Author>
+            {
+                new Author { FirstName = "Stephen", LastName = "King", DateOfBirth = new DateTime(1947, 9, 21), Nationality = "American", Biography = "Stephen King is an American author of horror, supernatural fiction, suspense, and fantasy novels." },
+                new Author { FirstName = "J.K.", LastName = "Rowling", DateOfBirth = new DateTime(1965, 7, 31), Nationality = "British", Biography = "J.K. Rowling is a British author best known for the Harry Potter fantasy series." },
+                new Author { FirstName = "George", LastName = "Orwell", DateOfBirth = new DateTime(1903, 6, 25), Nationality = "British", Biography = "George Orwell was an English novelist, essayist, and critic." },
+                new Author { FirstName = "Jane", LastName = "Austen", DateOfBirth = new DateTime(1775, 12, 16), Nationality = "British", Biography = "Jane Austen was an English novelist known for her six major novels." },
+                new Author { FirstName = "Mark", LastName = "Twain", DateOfBirth = new DateTime(1835, 11, 30), Nationality = "American", Biography = "Mark Twain was an American writer, humorist, and lecturer." },
+                new Author { FirstName = "Ernest", LastName = "Hemingway", DateOfBirth = new DateTime(1899, 7, 21), Nationality = "American", Biography = "Ernest Hemingway was an American novelist and short-story writer." },
+                new Author { FirstName = "Agatha", LastName = "Christie", DateOfBirth = new DateTime(1890, 9, 15), Nationality = "British", Biography = "Agatha Christie was an English writer known for her detective novels." },
+                new Author { FirstName = "Charles", LastName = "Dickens", DateOfBirth = new DateTime(1812, 2, 7), Nationality = "British", Biography = "Charles Dickens was an English writer and social critic." },
+                new Author { FirstName = "Leo", LastName = "Tolstoy", DateOfBirth = new DateTime(1828, 9, 9), Nationality = "Russian", Biography = "Leo Tolstoy was a Russian writer regarded as one of the greatest authors of all time." },
+                new Author { FirstName = "Gabriel", LastName = "García Márquez", DateOfBirth = new DateTime(1927, 3, 6), Nationality = "Colombian", Biography = "Gabriel García Márquez was a Colombian novelist and Nobel Prize winner." },
+                new Author { FirstName = "Fyodor", LastName = "Dostoevsky", DateOfBirth = new DateTime(1821, 11, 11), Nationality = "Russian", Biography = "Fyodor Dostoevsky was a Russian novelist and philosopher." },
+                new Author { FirstName = "Virginia", LastName = "Woolf", DateOfBirth = new DateTime(1882, 1, 25), Nationality = "British", Biography = "Virginia Woolf was an English writer and modernist." },
+                new Author { FirstName = "Franz", LastName = "Kafka", DateOfBirth = new DateTime(1883, 7, 3), Nationality = "Czech", Biography = "Franz Kafka was a German-speaking Bohemian novelist." },
+                new Author { FirstName = "Oscar", LastName = "Wilde", DateOfBirth = new DateTime(1854, 10, 16), Nationality = "Irish", Biography = "Oscar Wilde was an Irish poet and playwright." },
+                new Author { FirstName = "Harper", LastName = "Lee", DateOfBirth = new DateTime(1926, 4, 28), Nationality = "American", Biography = "Harper Lee was an American novelist known for To Kill a Mockingbird." },
+                new Author { FirstName = "F. Scott", LastName = "Fitzgerald", DateOfBirth = new DateTime(1896, 9, 24), Nationality = "American", Biography = "F. Scott Fitzgerald was an American novelist of the Jazz Age." },
+                new Author { FirstName = "George R.R.", LastName = "Martin", DateOfBirth = new DateTime(1948, 9, 20), Nationality = "American", Biography = "George R.R. Martin is an American novelist known for A Song of Ice and Fire." },
+                new Author { FirstName = "J.R.R.", LastName = "Tolkien", DateOfBirth = new DateTime(1892, 1, 3), Nationality = "British", Biography = "J.R.R. Tolkien was an English writer known for The Lord of the Rings." },
+                new Author { FirstName = "Dan", LastName = "Brown", DateOfBirth = new DateTime(1964, 6, 22), Nationality = "American", Biography = "Dan Brown is an American author known for thriller novels." },
+                new Author { FirstName = "Paulo", LastName = "Coelho", DateOfBirth = new DateTime(1947, 8, 24), Nationality = "Brazilian", Biography = "Paulo Coelho is a Brazilian lyricist and novelist." },
+                new Author { FirstName = "Margaret", LastName = "Atwood", DateOfBirth = new DateTime(1939, 11, 18), Nationality = "Canadian", Biography = "Margaret Atwood is a Canadian poet, novelist, and environmental activist." },
+                new Author { FirstName = "Neil", LastName = "Gaiman", DateOfBirth = new DateTime(1960, 11, 10), Nationality = "British", Biography = "Neil Gaiman is an English author of short fiction, novels, and comics." },
+                new Author { FirstName = "Khaled", LastName = "Hosseini", DateOfBirth = new DateTime(1965, 3, 4), Nationality = "Afghan-American", Biography = "Khaled Hosseini is an Afghan-American novelist." },
+                new Author { FirstName = "Toni", LastName = "Morrison", DateOfBirth = new DateTime(1931, 2, 18), Nationality = "American", Biography = "Toni Morrison was an American novelist and Nobel Prize winner." },
+                new Author { FirstName = "Haruki", LastName = "Murakami", DateOfBirth = new DateTime(1949, 1, 12), Nationality = "Japanese", Biography = "Haruki Murakami is a Japanese writer and translator." }
             };
         }
 
@@ -87,35 +124,35 @@ namespace LibraryManagementSystem.Data
             };
         }
 
-        private static List<Author> GetAuthors()
+        private static List<Customer> GetCustomers()
         {
-            return new List<Author>
+            return new List<Customer>
             {
-                new Author { FirstName = "Stephen", LastName = "King", DateOfBirth = new DateTime(1947, 9, 21), Nationality = "American", Biography = "Stephen King is an American author of horror, supernatural fiction, suspense, and fantasy novels." },
-                new Author { FirstName = "J.K.", LastName = "Rowling", DateOfBirth = new DateTime(1965, 7, 31), Nationality = "British", Biography = "J.K. Rowling is a British author best known for the Harry Potter fantasy series." },
-                new Author { FirstName = "George", LastName = "Orwell", DateOfBirth = new DateTime(1903, 6, 25), Nationality = "British", Biography = "George Orwell was an English novelist, essayist, and critic." },
-                new Author { FirstName = "Jane", LastName = "Austen", DateOfBirth = new DateTime(1775, 12, 16), Nationality = "British", Biography = "Jane Austen was an English novelist known for her six major novels." },
-                new Author { FirstName = "Mark", LastName = "Twain", DateOfBirth = new DateTime(1835, 11, 30), Nationality = "American", Biography = "Mark Twain was an American writer, humorist, and lecturer." },
-                new Author { FirstName = "Ernest", LastName = "Hemingway", DateOfBirth = new DateTime(1899, 7, 21), Nationality = "American", Biography = "Ernest Hemingway was an American novelist and short-story writer." },
-                new Author { FirstName = "Agatha", LastName = "Christie", DateOfBirth = new DateTime(1890, 9, 15), Nationality = "British", Biography = "Agatha Christie was an English writer known for her detective novels." },
-                new Author { FirstName = "Charles", LastName = "Dickens", DateOfBirth = new DateTime(1812, 2, 7), Nationality = "British", Biography = "Charles Dickens was an English writer and social critic." },
-                new Author { FirstName = "Leo", LastName = "Tolstoy", DateOfBirth = new DateTime(1828, 9, 9), Nationality = "Russian", Biography = "Leo Tolstoy was a Russian writer regarded as one of the greatest authors of all time." },
-                new Author { FirstName = "Gabriel", LastName = "García Márquez", DateOfBirth = new DateTime(1927, 3, 6), Nationality = "Colombian", Biography = "Gabriel García Márquez was a Colombian novelist and Nobel Prize winner." },
-                new Author { FirstName = "Fyodor", LastName = "Dostoevsky", DateOfBirth = new DateTime(1821, 11, 11), Nationality = "Russian", Biography = "Fyodor Dostoevsky was a Russian novelist and philosopher." },
-                new Author { FirstName = "Virginia", LastName = "Woolf", DateOfBirth = new DateTime(1882, 1, 25), Nationality = "British", Biography = "Virginia Woolf was an English writer and modernist." },
-                new Author { FirstName = "Franz", LastName = "Kafka", DateOfBirth = new DateTime(1883, 7, 3), Nationality = "Czech", Biography = "Franz Kafka was a German-speaking Bohemian novelist." },
-                new Author { FirstName = "Oscar", LastName = "Wilde", DateOfBirth = new DateTime(1854, 10, 16), Nationality = "Irish", Biography = "Oscar Wilde was an Irish poet and playwright." },
-                new Author { FirstName = "Harper", LastName = "Lee", DateOfBirth = new DateTime(1926, 4, 28), Nationality = "American", Biography = "Harper Lee was an American novelist known for To Kill a Mockingbird." },
-                new Author { FirstName = "F. Scott", LastName = "Fitzgerald", DateOfBirth = new DateTime(1896, 9, 24), Nationality = "American", Biography = "F. Scott Fitzgerald was an American novelist of the Jazz Age." },
-                new Author { FirstName = "George R.R.", LastName = "Martin", DateOfBirth = new DateTime(1948, 9, 20), Nationality = "American", Biography = "George R.R. Martin is an American novelist known for A Song of Ice and Fire." },
-                new Author { FirstName = "J.R.R.", LastName = "Tolkien", DateOfBirth = new DateTime(1892, 1, 3), Nationality = "British", Biography = "J.R.R. Tolkien was an English writer known for The Lord of the Rings." },
-                new Author { FirstName = "Dan", LastName = "Brown", DateOfBirth = new DateTime(1964, 6, 22), Nationality = "American", Biography = "Dan Brown is an American author known for thriller novels." },
-                new Author { FirstName = "Paulo", LastName = "Coelho", DateOfBirth = new DateTime(1947, 8, 24), Nationality = "Brazilian", Biography = "Paulo Coelho is a Brazilian lyricist and novelist." },
-                new Author { FirstName = "Margaret", LastName = "Atwood", DateOfBirth = new DateTime(1939, 11, 18), Nationality = "Canadian", Biography = "Margaret Atwood is a Canadian poet, novelist, and environmental activist." },
-                new Author { FirstName = "Neil", LastName = "Gaiman", DateOfBirth = new DateTime(1960, 11, 10), Nationality = "British", Biography = "Neil Gaiman is an English author of short fiction, novels, and comics." },
-                new Author { FirstName = "Khaled", LastName = "Hosseini", DateOfBirth = new DateTime(1965, 3, 4), Nationality = "Afghan-American", Biography = "Khaled Hosseini is an Afghan-American novelist." },
-                new Author { FirstName = "Toni", LastName = "Morrison", DateOfBirth = new DateTime(1931, 2, 18), Nationality = "American", Biography = "Toni Morrison was an American novelist and Nobel Prize winner." },
-                new Author { FirstName = "Haruki", LastName = "Murakami", DateOfBirth = new DateTime(1949, 1, 12), Nationality = "Japanese", Biography = "Haruki Murakami is a Japanese writer and translator." }
+                new Customer { FirstName = "Emma", LastName = "Wilson", Email = "emma.wilson@email.com", PhoneNumber = "+1-555-0101", Address = "123 Oak Street", City = "New York", LibraryCardNumber = "LIB-2024-0001", PreferredBranchId = 1 },
+                new Customer { FirstName = "James", LastName = "Brown", Email = "james.brown@email.com", PhoneNumber = "+1-555-0102", Address = "456 Maple Avenue", City = "Los Angeles", LibraryCardNumber = "LIB-2024-0002", PreferredBranchId = 3 },
+                new Customer { FirstName = "Olivia", LastName = "Davis", Email = "olivia.davis@email.com", PhoneNumber = "+1-555-0103", Address = "789 Pine Road", City = "Chicago", LibraryCardNumber = "LIB-2024-0003", PreferredBranchId = 4 },
+                new Customer { FirstName = "William", LastName = "Johnson", Email = "william.johnson@email.com", PhoneNumber = "+1-555-0104", Address = "321 Elm Street", City = "Boston", LibraryCardNumber = "LIB-2024-0004", PreferredBranchId = 5 },
+                new Customer { FirstName = "Sophia", LastName = "Miller", Email = "sophia.miller@email.com", PhoneNumber = "+1-555-0105", Address = "654 Cedar Lane", City = "San Francisco", LibraryCardNumber = "LIB-2024-0005", PreferredBranchId = 6 },
+                new Customer { FirstName = "Benjamin", LastName = "Garcia", Email = "benjamin.garcia@email.com", PhoneNumber = "+1-555-0106", Address = "987 Birch Drive", City = "Portland", LibraryCardNumber = "LIB-2024-0006", PreferredBranchId = 7 },
+                new Customer { FirstName = "Isabella", LastName = "Martinez", Email = "isabella.martinez@email.com", PhoneNumber = "+1-555-0107", Address = "147 Willow Way", City = "Philadelphia", LibraryCardNumber = "LIB-2024-0007", PreferredBranchId = 8 },
+                new Customer { FirstName = "Lucas", LastName = "Anderson", Email = "lucas.anderson@email.com", PhoneNumber = "+1-555-0108", Address = "258 Spruce Court", City = "Seattle", LibraryCardNumber = "LIB-2024-0008", PreferredBranchId = 9 },
+                new Customer { FirstName = "Mia", LastName = "Thomas", Email = "mia.thomas@email.com", PhoneNumber = "+1-555-0109", Address = "369 Hickory Lane", City = "Denver", LibraryCardNumber = "LIB-2024-0009", PreferredBranchId = 10 },
+                new Customer { FirstName = "Henry", LastName = "Jackson", Email = "henry.jackson@email.com", PhoneNumber = "+1-555-0110", Address = "741 Ash Boulevard", City = "Austin", LibraryCardNumber = "LIB-2024-0010", PreferredBranchId = 11 },
+                new Customer { FirstName = "Charlotte", LastName = "White", Email = "charlotte.white@email.com", PhoneNumber = "+1-555-0111", Address = "852 Sycamore Street", City = "Miami", LibraryCardNumber = "LIB-2024-0011", PreferredBranchId = 12 },
+                new Customer { FirstName = "Alexander", LastName = "Harris", Email = "alexander.harris@email.com", PhoneNumber = "+1-555-0112", Address = "963 Poplar Avenue", City = "Minneapolis", LibraryCardNumber = "LIB-2024-0012", PreferredBranchId = 13 },
+                new Customer { FirstName = "Amelia", LastName = "Clark", Email = "amelia.clark@email.com", PhoneNumber = "+1-555-0113", Address = "174 Chestnut Road", City = "Salt Lake City", LibraryCardNumber = "LIB-2024-0013", PreferredBranchId = 14 },
+                new Customer { FirstName = "Daniel", LastName = "Lewis", Email = "daniel.lewis@email.com", PhoneNumber = "+1-555-0114", Address = "285 Magnolia Drive", City = "San Diego", LibraryCardNumber = "LIB-2024-0014", PreferredBranchId = 15 },
+                new Customer { FirstName = "Harper", LastName = "Walker", Email = "harper.walker@email.com", PhoneNumber = "+1-555-0115", Address = "396 Dogwood Lane", City = "New Orleans", LibraryCardNumber = "LIB-2024-0015", PreferredBranchId = 16 },
+                new Customer { FirstName = "Michael", LastName = "Hall", Email = "michael.hall@email.com", PhoneNumber = "+1-555-0116", Address = "417 Redwood Court", City = "Ann Arbor", LibraryCardNumber = "LIB-2024-0016", PreferredBranchId = 17 },
+                new Customer { FirstName = "Evelyn", LastName = "Young", Email = "evelyn.young@email.com", PhoneNumber = "+1-555-0117", Address = "528 Sequoia Way", City = "Nashville", LibraryCardNumber = "LIB-2024-0017", PreferredBranchId = 18 },
+                new Customer { FirstName = "Ethan", LastName = "King", Email = "ethan.king@email.com", PhoneNumber = "+1-555-0118", Address = "639 Juniper Street", City = "Phoenix", LibraryCardNumber = "LIB-2024-0018", PreferredBranchId = 19 },
+                new Customer { FirstName = "Abigail", LastName = "Wright", Email = "abigail.wright@email.com", PhoneNumber = "+1-555-0119", Address = "740 Cypress Avenue", City = "Las Vegas", LibraryCardNumber = "LIB-2024-0019", PreferredBranchId = 20 },
+                new Customer { FirstName = "Sebastian", LastName = "Lopez", Email = "sebastian.lopez@email.com", PhoneNumber = "+1-555-0120", Address = "851 Palm Boulevard", City = "New York", LibraryCardNumber = "LIB-2024-0020", PreferredBranchId = 2 },
+                new Customer { FirstName = "Emily", LastName = "Hill", Email = "emily.hill@email.com", PhoneNumber = "+1-555-0121", Address = "962 Olive Street", City = "Los Angeles", LibraryCardNumber = "LIB-2024-0021", PreferredBranchId = 3 },
+                new Customer { FirstName = "Matthew", LastName = "Scott", Email = "matthew.scott@email.com", PhoneNumber = "+1-555-0122", Address = "173 Laurel Lane", City = "Chicago", LibraryCardNumber = "LIB-2024-0022", PreferredBranchId = 4 },
+                new Customer { FirstName = "Elizabeth", LastName = "Adams", Email = "elizabeth.adams@email.com", PhoneNumber = "+1-555-0123", Address = "284 Ivy Road", City = "Boston", LibraryCardNumber = "LIB-2024-0023", PreferredBranchId = 5 },
+                new Customer { FirstName = "David", LastName = "Baker", Email = "david.baker@email.com", PhoneNumber = "+1-555-0124", Address = "395 Fern Drive", City = "San Francisco", LibraryCardNumber = "LIB-2024-0024", PreferredBranchId = 6 },
+                new Customer { FirstName = "Aria", LastName = "Nelson", Email = "aria.nelson@email.com", PhoneNumber = "+1-555-0125", Address = "416 Sage Court", City = "Portland", LibraryCardNumber = "LIB-2024-0025", PreferredBranchId = 7 }
             };
         }
     }
