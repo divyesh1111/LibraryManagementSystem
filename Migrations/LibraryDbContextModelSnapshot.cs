@@ -24,7 +24,7 @@ namespace LibraryManagementSystem.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Biography")
-                        .HasMaxLength(1000)
+                        .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedDate")
@@ -33,9 +33,15 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
@@ -50,7 +56,15 @@ namespace LibraryManagementSystem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WebsiteUrl")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("FirstName", "LastName");
 
                     b.ToTable("Authors");
                 });
@@ -67,6 +81,9 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<int>("AvailableCopies")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("CoverImageUrl")
                         .HasColumnType("TEXT");
 
@@ -74,11 +91,7 @@ namespace LibraryManagementSystem.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Genre")
-                        .HasMaxLength(50)
+                        .HasMaxLength(3000)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ISBN")
@@ -86,11 +99,18 @@ namespace LibraryManagementSystem.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Language")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("LibraryBranchId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("PageCount")
                         .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<DateTime?>("PublicationDate")
                         .HasColumnType("TEXT");
@@ -107,16 +127,120 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<int>("TotalCopies")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("ISBN")
                         .IsUnique();
 
                     b.HasIndex("LibraryBranchId");
 
+                    b.HasIndex("Title");
+
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.BookLoan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("FineAmount")
+                        .HasColumnType("decimal(10, 2)");
+
+                    b.Property<bool>("IsFinePaid")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("LibraryBranchId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LoanDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RenewedCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ReturnDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("LibraryBranchId");
+
+                    b.ToTable("BookLoans");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ColorCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("IconClass")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("LibraryManagementSystem.Models.Customer", b =>
@@ -126,18 +250,26 @@ namespace LibraryManagementSystem.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Address")
-                        .HasMaxLength(300)
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("City")
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Country")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FirstName")
@@ -160,15 +292,31 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<DateTime>("MembershipDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("MembershipExpiry")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PreferredBranchId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("LibraryCardNumber")
                         .IsUnique();
 
                     b.HasIndex("PreferredBranchId");
@@ -184,7 +332,7 @@ namespace LibraryManagementSystem.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(300)
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("BranchName")
@@ -196,14 +344,38 @@ namespace LibraryManagementSystem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Country")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("EstablishedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("ManagerName")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("OpeningHours")
                         .HasMaxLength(200)
@@ -220,9 +392,66 @@ namespace LibraryManagementSystem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("TotalCapacity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Website")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("BranchName");
+
                     b.ToTable("LibraryBranches");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HelpfulVotes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("BookId", "CustomerId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("LibraryManagementSystem.Models.Book", b =>
@@ -233,12 +462,45 @@ namespace LibraryManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LibraryManagementSystem.Models.Category", "Category")
+                        .WithMany("Books")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("LibraryManagementSystem.Models.LibraryBranch", "LibraryBranch")
                         .WithMany("Books")
                         .HasForeignKey("LibraryBranchId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Author");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("LibraryBranch");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.BookLoan", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.Book", "Book")
+                        .WithMany("BookLoans")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.Customer", "Customer")
+                        .WithMany("BookLoans")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.LibraryBranch", "LibraryBranch")
+                        .WithMany("BookLoans")
+                        .HasForeignKey("LibraryBranchId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Customer");
 
                     b.Navigation("LibraryBranch");
                 });
@@ -253,13 +515,53 @@ namespace LibraryManagementSystem.Migrations
                     b.Navigation("PreferredBranch");
                 });
 
+            modelBuilder.Entity("LibraryManagementSystem.Models.Review", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.Book", "Book")
+                        .WithMany("Reviews")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementSystem.Models.Customer", "Customer")
+                        .WithMany("Reviews")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("LibraryManagementSystem.Models.Author", b =>
                 {
                     b.Navigation("Books");
                 });
 
+            modelBuilder.Entity("LibraryManagementSystem.Models.Book", b =>
+                {
+                    b.Navigation("BookLoans");
+
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.Category", b =>
+                {
+                    b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.Customer", b =>
+                {
+                    b.Navigation("BookLoans");
+
+                    b.Navigation("Reviews");
+                });
+
             modelBuilder.Entity("LibraryManagementSystem.Models.LibraryBranch", b =>
                 {
+                    b.Navigation("BookLoans");
+
                     b.Navigation("Books");
 
                     b.Navigation("Customers");

@@ -1,0 +1,162 @@
+@model LibraryManagementSystem.ViewModels.AuthorListViewModel
+@{
+    ViewData["Title"] = "Authors";
+}
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="md:flex md:items-center md:justify-between">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl">
+                <i class="fas fa-pen-fancy text-indigo-600 mr-2"></i>Authors
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">Manage book authors</p>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0">
+            <a href="/Authors/Create" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition">
+                <i class="fas fa-plus mr-2"></i> Add Author
+            </a>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="bg-white shadow rounded-lg p-4">
+        <form method="get" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <input type="text" name="searchTerm" value="@Model.SearchTerm" 
+                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+                       placeholder="Search by name or nationality...">
+            </div>
+            <div>
+                <select name="sortBy" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border">
+                    <option value="">Name (A-Z)</option>
+                    <option value="name_desc" selected="@(Model.SortBy == "name_desc")">Name (Z-A)</option>
+                    <option value="books" selected="@(Model.SortBy == "books")">Most Books</option>
+                    <option value="newest" selected="@(Model.SortBy == "newest")">Newest First</option>
+                </select>
+            </div>
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                <i class="fas fa-search mr-2"></i> Search
+            </button>
+            <a href="/Authors" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50">
+                Clear
+            </a>
+        </form>
+    </div>
+
+    <!-- Authors Table -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nationality</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Books</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @foreach (var author in Model.Authors)
+                {
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 flex-shrink-0">
+                                    @if (!string.IsNullOrEmpty(author.ImageUrl))
+                                    {
+                                        <img class="h-10 w-10 rounded-full object-cover" src="@author.ImageUrl" alt="@author.FullName">
+                                    }
+                                    else
+                                    {
+                                        <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                            <span class="text-indigo-600 font-medium">@author.FirstName[0]@author.LastName[0]</span>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="ml-4">
+                                    <a href="/Authors/Details/@author.Id" class="text-sm font-medium text-gray-900 hover:text-indigo-600">
+                                        @author.FullName
+                                    </a>
+                                    @if (author.DateOfBirth.HasValue)
+                                    {
+                                        <p class="text-xs text-gray-500">Born: @author.DateOfBirth.Value.ToString("MMM dd, yyyy")</p>
+                                    }
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            @(author.Nationality ?? "Unknown")
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-800">
+                                @author.BookCount books
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if (author.IsActive)
+                            {
+                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                    Active
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                                    Inactive
+                                </span>
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="/Authors/Details/@author.Id" class="text-gray-600 hover:text-gray-900 mr-3">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="/Authors/Edit/@author.Id" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="/Authors/Delete/@author.Id" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Authors.Any())
+    {
+        <div class="text-center py-12 bg-white rounded-lg shadow">
+            <i class="fas fa-user-edit text-gray-400 text-5xl mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-900">No authors found</h3>
+            <p class="text-gray-500 mt-2">Get started by adding a new author.</p>
+            <a href="/Authors/Create" class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                <i class="fas fa-plus mr-2"></i> Add Author
+            </a>
+        </div>
+    }
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow">
+            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <p class="text-sm text-gray-700">
+                    Page <span class="font-medium">@Model.PageNumber</span> of <span class="font-medium">@Model.TotalPages</span>
+                </p>
+                <div class="flex space-x-2">
+                    @if (Model.PageNumber > 1)
+                    {
+                        <a href="?pageNumber=@(Model.PageNumber - 1)&searchTerm=@Model.SearchTerm&sortBy=@Model.SortBy" 
+                           class="px-3 py-2 text-sm bg-white border rounded-md hover:bg-gray-50">Previous</a>
+                    }
+                    @if (Model.PageNumber < Model.TotalPages)
+                    {
+                        <a href="?pageNumber=@(Model.PageNumber + 1)&searchTerm=@Model.SearchTerm&sortBy=@Model.SortBy" 
+                           class="px-3 py-2 text-sm bg-white border rounded-md hover:bg-gray-50">Next</a>
+                    }
+                </div>
+            </div>
+        </nav>
+    }
+</div>

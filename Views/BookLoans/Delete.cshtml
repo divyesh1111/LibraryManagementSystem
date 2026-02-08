@@ -1,0 +1,62 @@
+@model LibraryManagementSystem.Models.BookLoan
+@{
+    ViewData["Title"] = "Delete Loan Record";
+}
+
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-center justify-center w-16 h-16 mx-auto bg-red-100 rounded-full">
+                <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+            </div>
+            <h2 class="mt-4 text-2xl font-bold text-center text-gray-900">Delete Loan Record</h2>
+            <p class="mt-2 text-center text-gray-600">Are you sure you want to delete this loan record? This action cannot be undone.</p>
+
+            <div class="mt-6 bg-gray-50 rounded-lg p-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Book</p>
+                        <p class="font-medium text-gray-900">@Model.Book?.Title</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Customer</p>
+                        <p class="font-medium text-gray-900">@Model.Customer?.FirstName @Model.Customer?.LastName</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Loan Date</p>
+                        <p class="font-medium text-gray-900">@Model.LoanDate.ToString("MMM dd, yyyy")</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Status</p>
+                        <p class="font-medium text-gray-900">@Model.Status</p>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Status == LibraryManagementSystem.Models.LoanStatus.Active)
+            {
+                <div class="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div class="flex">
+                        <i class="fas fa-info-circle text-yellow-600 mt-0.5"></i>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-medium text-yellow-800">Note</h4>
+                            <p class="text-sm text-yellow-700 mt-1">This is an active loan. Deleting it will return the book to available inventory.</p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="mt-6 flex justify-center space-x-4">
+                <a href="/BookLoans" class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+                    Cancel
+                </a>
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700">
+                        <i class="fas fa-trash mr-2"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

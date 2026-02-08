@@ -6,38 +6,64 @@ namespace LibraryManagementSystem.ViewModels
     {
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "First name is required")]
+        [StringLength(100, MinimumLength = 2)]
         [Display(Name = "First Name")]
         public string FirstName { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Last name is required")]
+        [StringLength(100, MinimumLength = 2)]
         [Display(Name = "Last Name")]
         public string LastName { get; set; } = string.Empty;
 
-        [Display(Name = "Full Name")]
         public string FullName => $"{FirstName} {LastName}";
 
         [Display(Name = "Date of Birth")]
+        [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
+        [StringLength(100)]
         public string? Nationality { get; set; }
 
+        [StringLength(2000)]
         public string? Biography { get; set; }
 
-        [Display(Name = "Is Active")]
-        public bool IsActive { get; set; }
+        [Url]
+        [Display(Name = "Website")]
+        public string? WebsiteUrl { get; set; }
 
-        [Display(Name = "Number of Books")]
+        [EmailAddress]
+        public string? Email { get; set; }
+
+        [Display(Name = "Image URL")]
+        public string? ImageUrl { get; set; }
+
+        [Display(Name = "Is Active")]
+        public bool IsActive { get; set; } = true;
+
         public int BookCount { get; set; }
+    }
+
+    public class AuthorListViewModel
+    {
+        public IEnumerable<AuthorViewModel> Authors { get; set; } = new List<AuthorViewModel>();
+        public string? SearchTerm { get; set; }
+        public string? SortBy { get; set; }
+        public int TotalCount { get; set; }
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
     }
 
     public class AuthorCreateViewModel
     {
         [Required(ErrorMessage = "First name is required")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 100 characters")]
+        [StringLength(100, MinimumLength = 2)]
         [Display(Name = "First Name")]
         public string FirstName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Last name is required")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Last name must be between 2 and 100 characters")]
+        [StringLength(100, MinimumLength = 2)]
         [Display(Name = "Last Name")]
         public string LastName { get; set; } = string.Empty;
 
@@ -48,70 +74,32 @@ namespace LibraryManagementSystem.ViewModels
         [StringLength(100)]
         public string? Nationality { get; set; }
 
-        [StringLength(1000)]
+        [StringLength(2000)]
         public string? Biography { get; set; }
+
+        [Url]
+        [Display(Name = "Website")]
+        public string? WebsiteUrl { get; set; }
+
+        [EmailAddress]
+        public string? Email { get; set; }
+
+        [Display(Name = "Image URL")]
+        public string? ImageUrl { get; set; }
 
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; } = true;
     }
 
-    public class AuthorEditViewModel
+    public class AuthorEditViewModel : AuthorCreateViewModel
     {
         public int Id { get; set; }
-
-        [Required(ErrorMessage = "First name is required")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 100 characters")]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Last name is required")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Last name must be between 2 and 100 characters")]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; } = string.Empty;
-
-        [Display(Name = "Date of Birth")]
-        [DataType(DataType.Date)]
-        public DateTime? DateOfBirth { get; set; }
-
-        [StringLength(100)]
-        public string? Nationality { get; set; }
-
-        [StringLength(1000)]
-        public string? Biography { get; set; }
-
-        [Display(Name = "Is Active")]
-        public bool IsActive { get; set; } = true;
     }
 
-    public class AuthorDetailsViewModel
+    public class AuthorDetailsViewModel : AuthorViewModel
     {
-        public int Id { get; set; }
-
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; } = string.Empty;
-
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; } = string.Empty;
-
-        [Display(Name = "Full Name")]
-        public string FullName => $"{FirstName} {LastName}";
-
-        [Display(Name = "Date of Birth")]
-        public DateTime? DateOfBirth { get; set; }
-
-        public string? Nationality { get; set; }
-
-        public string? Biography { get; set; }
-
-        [Display(Name = "Is Active")]
-        public bool IsActive { get; set; }
-
-        [Display(Name = "Created Date")]
+        public IEnumerable<BookViewModel> Books { get; set; } = new List<BookViewModel>();
         public DateTime CreatedDate { get; set; }
-
-        [Display(Name = "Number of Books")]
-        public int BookCount { get; set; }
-
-        public List<BookViewModel> Books { get; set; } = new List<BookViewModel>();
+        public DateTime? UpdatedDate { get; set; }
     }
 }

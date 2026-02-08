@@ -1,6 +1,71 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow rounded-lg p-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-shield-alt text-primary-600 mr-2"></i>Privacy Policy
+        </h1>
+
+        <div class="prose prose-lg max-w-none">
+            <p class="text-gray-600 mb-6">
+                Last updated: @DateTime.Now.ToString("MMMM dd, yyyy")
+            </p>
+
+            <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">1. Information We Collect</h2>
+            <p class="text-gray-600 mb-4">
+                The Library Management System collects information necessary to provide library services, including:
+            </p>
+            <ul class="list-disc list-inside text-gray-600 mb-4 space-y-2">
+                <li>Personal information (name, email, phone number, address)</li>
+                <li>Library card information</li>
+                <li>Borrowing history</li>
+                <li>Book preferences and reviews</li>
+            </ul>
+
+            <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">2. How We Use Your Information</h2>
+            <p class="text-gray-600 mb-4">
+                We use the collected information to:
+            </p>
+            <ul class="list-disc list-inside text-gray-600 mb-4 space-y-2">
+                <li>Manage library memberships</li>
+                <li>Process book loans and returns</li>
+                <li>Send notifications about due dates and overdue books</li>
+                <li>Improve our library services</li>
+            </ul>
+
+            <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">3. Data Security</h2>
+            <p class="text-gray-600 mb-4">
+                We implement appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction.
+            </p>
+
+            <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">4. Your Rights</h2>
+            <p class="text-gray-600 mb-4">
+                You have the right to:
+            </p>
+            <ul class="list-disc list-inside text-gray-600 mb-4 space-y-2">
+                <li>Access your personal information</li>
+                <li>Request corrections to your data</li>
+                <li>Request deletion of your account</li>
+                <li>Opt-out of non-essential communications</li>
+            </ul>
+
+            <h2 class="text-xl font-semibold text-gray-900 mt-8 mb-4">5. Contact Us</h2>
+            <p class="text-gray-600 mb-4">
+                If you have any questions about this Privacy Policy, please contact us at:
+            </p>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-gray-700"><strong>Email:</strong> privacy@library.com</p>
+                <p class="text-gray-700"><strong>Phone:</strong> +1-555-0100</p>
+                <p class="text-gray-700"><strong>Address:</strong> 123 Library Street, City, State 12345</p>
+            </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t">
+            <a href="/" class="inline-flex items-center text-primary-600 hover:text-primary-800">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</div>

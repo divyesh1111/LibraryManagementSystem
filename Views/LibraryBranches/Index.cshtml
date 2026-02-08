@@ -1,0 +1,143 @@
+@model LibraryManagementSystem.ViewModels.LibraryBranchListViewModel
+@{
+    ViewData["Title"] = "Library Branches";
+}
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="md:flex md:items-center md:justify-between">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl">
+                <i class="fas fa-building text-yellow-600 mr-2"></i>Library Branches
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">Manage library locations</p>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0">
+            <a href="/LibraryBranches/Create" class="inline-flex items-center rounded-md bg-yellow-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-700 transition">
+                <i class="fas fa-plus mr-2"></i> Add Branch
+            </a>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="bg-white shadow rounded-lg p-4">
+        <form method="get" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <input type="text" name="searchTerm" value="@Model.SearchTerm" 
+                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm px-3 py-2 border"
+                       placeholder="Search by name, city, or address...">
+            </div>
+            <div>
+                <select name="sortBy" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm px-3 py-2 border">
+                    <option value="">Name (A-Z)</option>
+                    <option value="name_desc" selected="@(Model.SortBy == "name_desc")">Name (Z-A)</option>
+                    <option value="city" selected="@(Model.SortBy == "city")">City</option>
+                    <option value="books" selected="@(Model.SortBy == "books")">Most Books</option>
+                </select>
+            </div>
+            <div class="flex items-center">
+                <label class="flex items-center">
+                    <input type="checkbox" name="activeOnly" value="true" class="h-4 w-4 text-yellow-600 border-gray-300 rounded" @(Model.ActiveOnly == true ? "checked" : "")>
+                    <span class="ml-2 text-sm text-gray-700">Active Only</span>
+                </label>
+            </div>
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
+                <i class="fas fa-search mr-2"></i> Search
+            </button>
+            <a href="/LibraryBranches" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50">
+                Clear
+            </a>
+        </form>
+    </div>
+
+    <!-- Branches Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var branch in Model.Branches)
+        {
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                <div class="h-40 bg-gradient-to-r from-yellow-500 to-orange-500 relative">
+                    @if (!string.IsNullOrEmpty(branch.ImageUrl))
+                    {
+                        <img src="@branch.ImageUrl" alt="@branch.BranchName" class="w-full h-full object-cover">
+                    }
+                    else
+                    {
+                        <div class="w-full h-full flex items-center justify-center">
+                            <i class="fas fa-building text-white text-5xl opacity-50"></i>
+                        </div>
+                    }
+                    @if (branch.IsActive)
+                    {
+                        <span class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">Open</span>
+                    }
+                    else
+                    {
+                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">Closed</span>
+                    }
+                </div>
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <a href="/LibraryBranches/Details/@branch.Id" class="hover:text-yellow-600">@branch.BranchName</a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mt-1">
+                        <i class="fas fa-map-marker-alt mr-1"></i>@branch.City, @branch.State
+                    </p>
+                    @if (!string.IsNullOrEmpty(branch.PhoneNumber))
+                    {
+                        <p class="text-sm text-gray-500 mt-1">
+                            <i class="fas fa-phone mr-1"></i>@branch.PhoneNumber
+                        </p>
+                    }
+                    
+                    <div class="mt-4 flex justify-between text-sm">
+                        <span class="text-gray-600"><i class="fas fa-book mr-1"></i>@branch.BookCount Books</span>
+                        <span class="text-gray-600"><i class="fas fa-users mr-1"></i>@branch.CustomerCount Members</span>
+                    </div>
+
+                    <div class="mt-4 flex space-x-2">
+                        <a href="/LibraryBranches/Details/@branch.Id" class="flex-1 text-center px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition">
+                            <i class="fas fa-eye mr-1"></i> View
+                        </a>
+                        <a href="/LibraryBranches/Edit/@branch.Id" class="flex-1 text-center px-3 py-2 text-sm bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-md transition">
+                            <i class="fas fa-edit mr-1"></i> Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Branches.Any())
+    {
+        <div class="text-center py-12 bg-white rounded-lg shadow">
+            <i class="fas fa-building text-gray-400 text-5xl mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-900">No branches found</h3>
+            <p class="text-gray-500 mt-2">Get started by adding a new branch.</p>
+            <a href="/LibraryBranches/Create" class="mt-4 inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
+                <i class="fas fa-plus mr-2"></i> Add Branch
+            </a>
+        </div>
+    }
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow">
+            <p class="text-sm text-gray-700">
+                Page <span class="font-medium">@Model.PageNumber</span> of <span class="font-medium">@Model.TotalPages</span>
+            </p>
+            <div class="flex space-x-2">
+                @if (Model.PageNumber > 1)
+                {
+                    <a href="?pageNumber=@(Model.PageNumber - 1)&searchTerm=@Model.SearchTerm&sortBy=@Model.SortBy" 
+                       class="px-3 py-2 text-sm bg-white border rounded-md hover:bg-gray-50">Previous</a>
+                }
+                @if (Model.PageNumber < Model.TotalPages)
+                {
+                    <a href="?pageNumber=@(Model.PageNumber + 1)&searchTerm=@Model.SearchTerm&sortBy=@Model.SortBy" 
+                       class="px-3 py-2 text-sm bg-white border rounded-md hover:bg-gray-50">Next</a>
+                }
+            </div>
+        </nav>
+    }
+</div>

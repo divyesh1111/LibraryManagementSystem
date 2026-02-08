@@ -1,0 +1,118 @@
+@model LibraryManagementSystem.Models.Category
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="max-w-6xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <a href="/Categories" class="inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Categories
+        </a>
+    </div>
+
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="h-3" style="background-color: @(Model.ColorCode ?? "#6366F1")"></div>
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="flex items-center space-x-3">
+                        @if (!string.IsNullOrEmpty(Model.IconClass))
+                        {
+                            <i class="@Model.IconClass text-2xl" style="color: @(Model.ColorCode ?? "#6366F1")"></i>
+                        }
+                        <h1 class="text-3xl font-bold text-gray-900">@Model.Name</h1>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <p class="mt-2 text-gray-600">@Model.Description</p>
+                    }
+                </div>
+                <div class="flex items-center space-x-2">
+                    @if (Model.IsActive)
+                    {
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
+                            <i class="fas fa-check-circle mr-1"></i> Active
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">
+                            <i class="fas fa-times-circle mr-1"></i> Inactive
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-3 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg text-center">
+                    <p class="text-3xl font-bold text-gray-900">@Model.Books.Count</p>
+                    <p class="text-sm text-gray-600">Books</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg text-center">
+                    <p class="text-3xl font-bold text-gray-900">@Model.DisplayOrder</p>
+                    <p class="text-sm text-gray-600">Display Order</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg text-center">
+                    <div class="w-8 h-8 rounded-full mx-auto" style="background-color: @(Model.ColorCode ?? "#6366F1")"></div>
+                    <p class="text-sm text-gray-600 mt-2">@(Model.ColorCode ?? "Default")</p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex space-x-4">
+                <a href="/Categories/Edit/@Model.Id" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">
+                    <i class="fas fa-edit mr-2"></i> Edit Category
+                </a>
+                <a href="/Categories/Delete/@Model.Id" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                    <i class="fas fa-trash mr-2"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Books in Category -->
+    @if (Model.Books != null && Model.Books.Any())
+    {
+        <div class="mt-8 bg-white shadow rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-book mr-2" style="color: @(Model.ColorCode ?? "#6366F1")"></i>Books in @Model.Name (@Model.Books.Count)
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                @foreach (var book in Model.Books)
+                {
+                    <div class="border rounded-lg p-4 hover:shadow-md transition">
+                        <div class="flex items-start space-x-3">
+                            @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                            {
+                                <img src="@book.CoverImageUrl" alt="@book.Title" class="w-12 h-16 object-cover rounded">
+                            }
+                            else
+                            {
+                                <div class="w-12 h-16 bg-gray-200 rounded flex items-center justify-center">
+                                    <i class="fas fa-book text-gray-400"></i>
+                                </div>
+                            }
+                            <div class="flex-1 min-w-0">
+                                <a href="/Books/Details/@book.Id" class="text-sm font-medium text-gray-900 hover:text-purple-600 line-clamp-2">
+                                    @book.Title
+                                </a>
+                                <p class="text-xs text-gray-500 mt-1">@book.Author?.FirstName @book.Author?.LastName</p>
+                                <span class="inline-flex items-center rounded-full @(book.AvailableCopies > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800") px-2 py-0.5 text-xs font-medium mt-1">
+                                    @(book.AvailableCopies > 0 ? "Available" : "Not available")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="mt-8 bg-white shadow rounded-lg p-6 text-center">
+            <i class="fas fa-book-open text-gray-400 text-4xl mb-3"></i>
+            <h3 class="text-lg font-medium text-gray-900">No books in this category</h3>
+            <p class="text-gray-500 mt-1">Add books to this category to see them here.</p>
+        </div>
+    }
+</div>

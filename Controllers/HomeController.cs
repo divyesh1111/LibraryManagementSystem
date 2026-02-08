@@ -20,56 +20,53 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var totalBooks = await _context.Books.SumAsync(b => b.TotalCopies);
-            var availableBooks = await _context.Books.SumAsync(b => b.AvailableCopies);
-
             var dashboard = new DashboardViewModel
             {
                 TotalBooks = await _context.Books.CountAsync(),
                 TotalAuthors = await _context.Authors.CountAsync(),
                 TotalCustomers = await _context.Customers.CountAsync(),
                 TotalBranches = await _context.LibraryBranches.CountAsync(),
-                AvailableBooks = availableBooks,
-                BorrowedBooks = totalBooks - availableBooks,
+                TotalCategories = await _context.Categories.CountAsync(),
+                ActiveLoans = await _context.BookLoans.CountAsync(l => l.Status == LoanStatus.Active),
+                OverdueLoans = await _context.BookLoans.CountAsync(l => l.Status == LoanStatus.Overdue),
+                TotalReviews = await _context.Reviews.CountAsync(),
+                AvailableBooks = await _context.Books.SumAsync(b => b.AvailableCopies),
 
                 RecentBooks = await _context.Books
                     .Include(b => b.Author)
-                    .Include(b => b.LibraryBranch)
+                    .Include(b => b.Category)
                     .OrderByDescending(b => b.CreatedDate)
-                    .Take(5)
+                    .Take(6)
                     .Select(b => new BookViewModel
                     {
                         Id = b.Id,
                         Title = b.Title,
                         ISBN = b.ISBN,
-                        Genre = b.Genre,
                         CoverImageUrl = b.CoverImageUrl,
-                        AuthorId = b.AuthorId,
                         AuthorName = b.Author != null ? $"{b.Author.FirstName} {b.Author.LastName}" : "Unknown",
-                        LibraryBranchId = b.LibraryBranchId,
-                        LibraryBranchName = b.LibraryBranch != null ? b.LibraryBranch.BranchName : null,
+                        CategoryName = b.Category != null ? b.Category.Name : null,
                         AvailableCopies = b.AvailableCopies,
-                        TotalCopies = b.TotalCopies
+                        Price = b.Price
                     })
                     .ToListAsync(),
 
-                TopAuthors = await _context.Authors
-                    .Include(a => a.Books)
-                    .OrderByDescending(a => a.Books.Count)
+                RecentLoans = await _context.BookLoans
+                    .Include(l => l.Book)
+                    .Include(l => l.Customer)
+                    .OrderByDescending(l => l.LoanDate)
                     .Take(5)
-                    .Select(a => new AuthorViewModel
+                    .Select(l => new BookLoanViewModel
                     {
-                        Id = a.Id,
-                        FirstName = a.FirstName,
-                        LastName = a.LastName,
-                        Nationality = a.Nationality,
-                        IsActive = a.IsActive,
-                        BookCount = a.Books.Count
+                        Id = l.Id,
+                        BookTitle = l.Book != null ? l.Book.Title : "Unknown",
+                        CustomerName = l.Customer != null ? $"{l.Customer.FirstName} {l.Customer.LastName}" : "Unknown",
+                        LoanDate = l.LoanDate,
+                        DueDate = l.DueDate,
+                        Status = l.Status
                     })
                     .ToListAsync(),
 
-                RecentCustomers = await _context.Customers
-                    .Include(c => c.PreferredBranch)
+                NewCustomers = await _context.Customers
                     .OrderByDescending(c => c.MembershipDate)
                     .Take(5)
                     .Select(c => new CustomerViewModel
@@ -78,15 +75,16 @@ namespace LibraryManagementSystem.Controllers
                         FirstName = c.FirstName,
                         LastName = c.LastName,
                         Email = c.Email,
-                        PhoneNumber = c.PhoneNumber,
-                        City = c.City,
                         MembershipDate = c.MembershipDate,
-                        LibraryCardNumber = c.LibraryCardNumber,
-                        IsActiveMember = c.IsActiveMember,
-                        PreferredBranchName = c.PreferredBranch != null ? c.PreferredBranch.BranchName : null
+                        IsActiveMember = c.IsActiveMember
                     })
                     .ToListAsync()
             };
+
+            // Get books by category
+            dashboard.BooksByCategory = await _context.Categories
+                .Select(c => new { c.Name, Count = c.Books.Count })
+                .ToDictionaryAsync(x => x.Name, x => x.Count);
 
             return View(dashboard);
         }

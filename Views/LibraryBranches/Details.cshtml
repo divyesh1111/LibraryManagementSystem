@@ -1,0 +1,179 @@
+@model LibraryManagementSystem.ViewModels.LibraryBranchDetailsViewModel
+@{
+    ViewData["Title"] = Model.BranchName;
+}
+
+<div class="max-w-6xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <a href="/LibraryBranches" class="inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Branches
+        </a>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="h-64 bg-gradient-to-r from-yellow-500 to-orange-500 relative">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" alt="@Model.BranchName" class="w-full h-full object-cover">
+            }
+            else
+            {
+                <div class="w-full h-full flex items-center justify-center">
+                    <i class="fas fa-building text-white text-6xl opacity-50"></i>
+                </div>
+            }
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-white">@Model.BranchName</h1>
+                        <p class="text-white/80 mt-1">
+                            <i class="fas fa-map-marker-alt mr-1"></i>@Model.City, @Model.State
+                        </p>
+                    </div>
+                    @if (Model.IsActive)
+                    {
+                        <span class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                            <i class="fas fa-check-circle mr-1"></i> Open
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                            <i class="fas fa-times-circle mr-1"></i> Closed
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <p class="text-3xl font-bold text-blue-600">@Model.BookCount</p>
+                    <p class="text-sm text-gray-600">Books</p>
+                </div>
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <p class="text-3xl font-bold text-green-600">@Model.CustomerCount</p>
+                    <p class="text-sm text-gray-600">Members</p>
+                </div>
+                <div class="text-center p-4 bg-orange-50 rounded-lg">
+                    <p class="text-3xl font-bold text-orange-600">@Model.ActiveLoansCount</p>
+                    <p class="text-sm text-gray-600">Active Loans</p>
+                </div>
+            </div>
+
+            <!-- Details Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Contact Information</h3>
+                    <div class="space-y-3">
+                        <p class="flex items-center text-gray-600">
+                            <i class="fas fa-map-marker-alt w-6 text-gray-400"></i>
+                            @Model.Address, @Model.City, @Model.State @Model.PostalCode
+                        </p>
+                        @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                        {
+                            <p class="flex items-center text-gray-600">
+                                <i class="fas fa-phone w-6 text-gray-400"></i>
+                                @Model.PhoneNumber
+                            </p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Email))
+                        {
+                            <p class="flex items-center text-gray-600">
+                                <i class="fas fa-envelope w-6 text-gray-400"></i>
+                                <a href="mailto:@Model.Email" class="text-yellow-600 hover:underline">@Model.Email</a>
+                            </p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Website))
+                        {
+                            <p class="flex items-center text-gray-600">
+                                <i class="fas fa-globe w-6 text-gray-400"></i>
+                                <a href="@Model.Website" target="_blank" class="text-yellow-600 hover:underline">@Model.Website</a>
+                            </p>
+                        }
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Branch Details</h3>
+                    <div class="space-y-3">
+                        @if (!string.IsNullOrEmpty(Model.OpeningHours))
+                        {
+                            <p class="flex items-center text-gray-600">
+                                <i class="fas fa-clock w-6 text-gray-400"></i>
+                                @Model.OpeningHours
+                            </p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.ManagerName))
+                        {
+                            <p class="flex items-center text-gray-600">
+                                <i class="fas fa-user-tie w-6 text-gray-400"></i>
+                                Manager: @Model.ManagerName
+                            </p>
+                        }
+                        @if (Model.EstablishedDate.HasValue)
+                        {
+                            <p class="flex items-center text-gray-600">
+                                <i class="fas fa-calendar w-6 text-gray-400"></i>
+                                Est. @Model.EstablishedDate.Value.ToString("MMMM yyyy")
+                            </p>
+                        }
+                        @if (Model.TotalCapacity.HasValue)
+                        {
+                            <p class="flex items-center text-gray-600">
+                                <i class="fas fa-warehouse w-6 text-gray-400"></i>
+                                Capacity: @Model.TotalCapacity.Value.ToString("N0") books
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">About</h3>
+                    <p class="text-gray-600">@Model.Description</p>
+                </div>
+            }
+
+            <!-- Actions -->
+            <div class="mt-6 pt-6 border-t flex space-x-4">
+                <a href="/LibraryBranches/Edit/@Model.Id" class="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
+                    <i class="fas fa-edit mr-2"></i> Edit Branch
+                </a>
+                <a href="/LibraryBranches/Delete/@Model.Id" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                    <i class="fas fa-trash mr-2"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Books at this Branch -->
+    @if (Model.Books != null && Model.Books.Any())
+    {
+        <div class="mt-8 bg-white shadow rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-book text-yellow-500 mr-2"></i>Books at this Branch
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                @foreach (var book in Model.Books)
+                {
+                    <div class="border rounded-lg p-3 hover:shadow-md transition">
+                        <a href="/Books/Details/@book.Id" class="text-sm font-medium text-gray-900 hover:text-yellow-600 line-clamp-2">
+                            @book.Title
+                        </a>
+                        <p class="text-xs text-gray-500 mt-1">@book.AuthorName</p>
+                        <span class="inline-flex items-center rounded-full @(book.AvailableCopies > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800") px-2 py-0.5 text-xs font-medium mt-2">
+                            @(book.AvailableCopies > 0 ? $"{book.AvailableCopies} available" : "Not available")
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

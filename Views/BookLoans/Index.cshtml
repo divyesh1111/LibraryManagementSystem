@@ -1,0 +1,174 @@
+@model LibraryManagementSystem.ViewModels.BookLoanListViewModel
+@{
+    ViewData["Title"] = "Book Loans";
+}
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="md:flex md:items-center md:justify-between">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl">
+                <i class="fas fa-exchange-alt text-blue-600 mr-2"></i>Book Loans
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">Manage book lending and returns</p>
+        </div>
+        <div class="mt-4 flex space-x-2 md:ml-4 md:mt-0">
+            <form asp-action="MarkOverdue" method="post" class="inline">
+                <button type="submit" class="inline-flex items-center rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-700 transition">
+                    <i class="fas fa-clock mr-2"></i> Mark Overdue
+                </button>
+            </form>
+            <a href="/BookLoans/Create" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition">
+                <i class="fas fa-plus mr-2"></i> New Loan
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white shadow rounded-lg p-4">
+        <form method="get" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <input type="text" name="searchTerm" value="@Model.SearchTerm" 
+                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                       placeholder="Search by book title or customer name...">
+            </div>
+            <div>
+                <select name="statusFilter" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                    <option value="">All Status</option>
+                    <option value="@LibraryManagementSystem.Models.LoanStatus.Active" selected="@(Model.StatusFilter == LibraryManagementSystem.Models.LoanStatus.Active)">Active</option>
+                    <option value="@LibraryManagementSystem.Models.LoanStatus.Overdue" selected="@(Model.StatusFilter == LibraryManagementSystem.Models.LoanStatus.Overdue)">Overdue</option>
+                    <option value="@LibraryManagementSystem.Models.LoanStatus.Returned" selected="@(Model.StatusFilter == LibraryManagementSystem.Models.LoanStatus.Returned)">Returned</option>
+                </select>
+            </div>
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                <i class="fas fa-filter mr-2"></i> Filter
+            </button>
+            <a href="/BookLoans" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50">
+                Clear
+            </a>
+        </form>
+    </div>
+
+    <!-- Loans Table -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Book</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loan Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fine</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @foreach (var loan in Model.Loans)
+                {
+                    <tr class="hover:bg-gray-50 @(loan.Status == LibraryManagementSystem.Models.LoanStatus.Overdue ? "bg-red-50" : "")">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="/Books/Details/@loan.BookId" class="text-sm font-medium text-gray-900 hover:text-blue-600">
+                                @loan.BookTitle
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="/Customers/Details/@loan.CustomerId" class="text-sm text-gray-600 hover:text-blue-600">
+                                @loan.CustomerName
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            @loan.LoanDate.ToString("MMM dd, yyyy")
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm @(loan.IsOverdue ? "text-red-600 font-medium" : "text-gray-500")">
+                            @loan.DueDate.ToString("MMM dd, yyyy")
+                            @if (loan.IsOverdue)
+                            {
+                                <span class="block text-xs">(@loan.DaysOverdue days overdue)</span>
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if (loan.Status == LibraryManagementSystem.Models.LoanStatus.Active)
+                            {
+                                <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                                    <i class="fas fa-clock mr-1"></i> Active
+                                </span>
+                            }
+                            else if (loan.Status == LibraryManagementSystem.Models.LoanStatus.Overdue)
+                            {
+                                <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> Overdue
+                                </span>
+                            }
+                            else if (loan.Status == LibraryManagementSystem.Models.LoanStatus.Returned)
+                            {
+                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i> Returned
+                                </span>
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            @if (loan.FineAmount > 0)
+                            {
+                                <span class="text-red-600 font-medium">$@loan.FineAmount.ToString("F2")</span>
+                                @if (loan.IsFinePaid)
+                                {
+                                    <span class="text-xs text-green-600 block">Paid</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-gray-400">-</span>
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            @if (loan.Status == LibraryManagementSystem.Models.LoanStatus.Active || loan.Status == LibraryManagementSystem.Models.LoanStatus.Overdue)
+                            {
+                                <a href="/BookLoans/Return/@loan.Id" class="text-green-600 hover:text-green-900 mr-3" title="Return Book">
+                                    <i class="fas fa-undo"></i>
+                                </a>
+                            }
+                            <a href="/BookLoans/Delete/@loan.Id" class="text-red-600 hover:text-red-900" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Loans.Any())
+    {
+        <div class="text-center py-12 bg-white rounded-lg shadow">
+            <i class="fas fa-exchange-alt text-gray-400 text-5xl mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-900">No loans found</h3>
+            <p class="text-gray-500 mt-2">Create a new loan to get started.</p>
+            <a href="/BookLoans/Create" class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i> New Loan
+            </a>
+        </div>
+    }
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow">
+            <p class="text-sm text-gray-700">
+                Page <span class="font-medium">@Model.PageNumber</span> of <span class="font-medium">@Model.TotalPages</span>
+            </p>
+            <div class="flex space-x-2">
+                @if (Model.PageNumber > 1)
+                {
+                    <a href="?pageNumber=@(Model.PageNumber - 1)&searchTerm=@Model.SearchTerm&statusFilter=@Model.StatusFilter" 
+                       class="px-3 py-2 text-sm bg-white border rounded-md hover:bg-gray-50">Previous</a>
+                }
+                @if (Model.PageNumber < Model.TotalPages)
+                {
+                    <a href="?pageNumber=@(Model.PageNumber + 1)&searchTerm=@Model.SearchTerm&statusFilter=@Model.StatusFilter" 
+                       class="px-3 py-2 text-sm bg-white border rounded-md hover:bg-gray-50">Next</a>
+                }
+            </div>
+        </nav>
+    }
+</div>

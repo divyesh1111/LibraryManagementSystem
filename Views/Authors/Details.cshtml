@@ -1,0 +1,163 @@
+@model LibraryManagementSystem.ViewModels.AuthorDetailsViewModel
+@{
+    ViewData["Title"] = Model.FullName;
+}
+
+<div class="max-w-6xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <a href="/Authors" class="inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Authors
+        </a>
+    </div>
+
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="md:flex">
+            <!-- Author Photo -->
+            <div class="md:w-1/3 p-6 bg-gray-50">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="@Model.FullName" class="w-full rounded-lg shadow-md">
+                }
+                else
+                {
+                    <div class="w-full aspect-square bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <span class="text-indigo-600 text-6xl font-bold">@Model.FirstName[0]@Model.LastName[0]</span>
+                    </div>
+                }
+
+                <!-- Status Badge -->
+                <div class="mt-6">
+                    @if (Model.IsActive)
+                    {
+                        <span class="inline-flex items-center w-full justify-center rounded-full bg-green-100 px-4 py-2 text-sm font-medium text-green-800">
+                            <i class="fas fa-check-circle mr-2"></i> Active Author
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex items-center w-full justify-center rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-800">
+                            <i class="fas fa-times-circle mr-2"></i> Inactive
+                        </span>
+                    }
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-6 space-y-2">
+                    <a href="/Authors/Edit/@Model.Id" class="w-full inline-flex justify-center items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                        <i class="fas fa-edit mr-2"></i> Edit Author
+                    </a>
+                    <a href="/Authors/Delete/@Model.Id" class="w-full inline-flex justify-center items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                        <i class="fas fa-trash mr-2"></i> Delete Author
+                    </a>
+                </div>
+            </div>
+
+            <!-- Author Details -->
+            <div class="md:w-2/3 p-6">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">@Model.FullName</h1>
+                        @if (!string.IsNullOrEmpty(Model.Nationality))
+                        {
+                            <p class="text-lg text-gray-600 mt-1">
+                                <i class="fas fa-globe mr-2"></i>@Model.Nationality
+                            </p>
+                        }
+                    </div>
+                    <span class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800">
+                        <i class="fas fa-book mr-1"></i> @Model.BookCount Books
+                    </span>
+                </div>
+
+                <!-- Author Info Grid -->
+                <div class="mt-6 grid grid-cols-2 gap-4">
+                    @if (Model.DateOfBirth.HasValue)
+                    {
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-500">Date of Birth</p>
+                            <p class="font-medium text-gray-900">@Model.DateOfBirth.Value.ToString("MMMM dd, yyyy")</p>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Email))
+                    {
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-500">Email</p>
+                            <a href="mailto:@Model.Email" class="font-medium text-indigo-600 hover:underline">@Model.Email</a>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.WebsiteUrl))
+                    {
+                        <div class="bg-gray-50 p-4 rounded-lg col-span-2">
+                            <p class="text-sm text-gray-500">Website</p>
+                            <a href="@Model.WebsiteUrl" target="_blank" class="font-medium text-indigo-600 hover:underline">
+                                @Model.WebsiteUrl <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <!-- Biography -->
+                @if (!string.IsNullOrEmpty(Model.Biography))
+                {
+                    <div class="mt-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Biography</h3>
+                        <p class="text-gray-600 leading-relaxed">@Model.Biography</p>
+                    </div>
+                }
+
+                <!-- Timestamps -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>Added: @Model.CreatedDate.ToString("MMM dd, yyyy")</span>
+                        @if (Model.UpdatedDate.HasValue)
+                        {
+                            <span>Last Updated: @Model.UpdatedDate.Value.ToString("MMM dd, yyyy")</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Author's Books -->
+    @if (Model.Books != null && Model.Books.Any())
+    {
+        <div class="mt-8 bg-white shadow rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-book text-indigo-500 mr-2"></i>Books by @Model.FullName (@Model.Books.Count())
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                @foreach (var book in Model.Books)
+                {
+                    <div class="border rounded-lg p-4 hover:shadow-md transition">
+                        <div class="flex items-start space-x-3">
+                            @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                            {
+                                <img src="@book.CoverImageUrl" alt="@book.Title" class="w-16 h-20 object-cover rounded">
+                            }
+                            else
+                            {
+                                <div class="w-16 h-20 bg-gray-200 rounded flex items-center justify-center">
+                                    <i class="fas fa-book text-gray-400"></i>
+                                </div>
+                            }
+                            <div class="flex-1 min-w-0">
+                                <a href="/Books/Details/@book.Id" class="text-sm font-medium text-gray-900 hover:text-indigo-600 line-clamp-2">
+                                    @book.Title
+                                </a>
+                                <p class="text-xs text-gray-500 mt-1">ISBN: @book.ISBN</p>
+                                @if (!string.IsNullOrEmpty(book.CategoryName))
+                                {
+                                    <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 mt-1">
+                                        @book.CategoryName
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

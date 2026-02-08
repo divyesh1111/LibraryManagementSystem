@@ -17,28 +17,51 @@ namespace LibraryManagementSystem.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index(string searchString, string genre)
+        public async Task<IActionResult> Index(string? searchTerm, int? categoryFilter, int? authorFilter, int? branchFilter, bool? availableOnly, string? sortBy, int pageNumber = 1)
         {
-            var booksQuery = _context.Books
+            var query = _context.Books
                 .Include(b => b.Author)
+                .Include(b => b.Category)
                 .Include(b => b.LibraryBranch)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchString))
+            // Search
+            if (!string.IsNullOrEmpty(searchTerm))
             {
-                booksQuery = booksQuery.Where(b => 
-                    b.Title.Contains(searchString) || 
-                    b.ISBN.Contains(searchString) ||
-                    (b.Author != null && (b.Author.FirstName.Contains(searchString) || b.Author.LastName.Contains(searchString))));
+                query = query.Where(b => b.Title.Contains(searchTerm) || 
+                                         b.ISBN.Contains(searchTerm) ||
+                                         (b.Author != null && (b.Author.FirstName.Contains(searchTerm) || b.Author.LastName.Contains(searchTerm))));
             }
 
-            if (!string.IsNullOrEmpty(genre))
-            {
-                booksQuery = booksQuery.Where(b => b.Genre == genre);
-            }
+            // Filters
+            if (categoryFilter.HasValue)
+                query = query.Where(b => b.CategoryId == categoryFilter);
 
-            var books = await booksQuery
-                .OrderBy(b => b.Title)
+            if (authorFilter.HasValue)
+                query = query.Where(b => b.AuthorId == authorFilter);
+
+            if (branchFilter.HasValue)
+                query = query.Where(b => b.LibraryBranchId == branchFilter);
+
+            if (availableOnly == true)
+                query = query.Where(b => b.AvailableCopies > 0);
+
+            // Sorting
+            query = sortBy switch
+            {
+                "title_desc" => query.OrderByDescending(b => b.Title),
+                "author" => query.OrderBy(b => b.Author!.LastName),
+                "newest" => query.OrderByDescending(b => b.PublicationDate),
+                "oldest" => query.OrderBy(b => b.PublicationDate),
+                _ => query.OrderBy(b => b.Title)
+            };
+
+            var pageSize = 12;
+            var totalCount = await query.CountAsync();
+
+            var books = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .Select(b => new BookViewModel
                 {
                     Id = b.Id,
@@ -48,47 +71,58 @@ namespace LibraryManagementSystem.Controllers
                     PublicationDate = b.PublicationDate,
                     Publisher = b.Publisher,
                     PageCount = b.PageCount,
-                    Genre = b.Genre,
+                    Language = b.Language,
                     CoverImageUrl = b.CoverImageUrl,
+                    Price = b.Price,
                     AvailableCopies = b.AvailableCopies,
                     TotalCopies = b.TotalCopies,
                     AuthorId = b.AuthorId,
                     AuthorName = b.Author != null ? $"{b.Author.FirstName} {b.Author.LastName}" : "Unknown",
+                    CategoryId = b.CategoryId,
+                    CategoryName = b.Category != null ? b.Category.Name : null,
                     LibraryBranchId = b.LibraryBranchId,
-                    LibraryBranchName = b.LibraryBranch != null ? b.LibraryBranch.BranchName : null
+                    LibraryBranchName = b.LibraryBranch != null ? b.LibraryBranch.BranchName : null,
+                    AverageRating = b.Reviews.Any() ? b.Reviews.Average(r => r.Rating) : 0,
+                    ReviewCount = b.Reviews.Count
                 })
                 .ToListAsync();
 
-            ViewBag.Genres = await _context.Books
-                .Where(b => b.Genre != null)
-                .Select(b => b.Genre)
-                .Distinct()
-                .OrderBy(g => g)
-                .ToListAsync();
+            var viewModel = new BookListViewModel
+            {
+                Books = books,
+                SearchTerm = searchTerm,
+                SortBy = sortBy,
+                CategoryFilter = categoryFilter,
+                AuthorFilter = authorFilter,
+                BranchFilter = branchFilter,
+                AvailableOnly = availableOnly,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name"),
+                Authors = new SelectList(await _context.Authors.Select(a => new { a.Id, Name = a.FirstName + " " + a.LastName }).ToListAsync(), "Id", "Name"),
+                Branches = new SelectList(await _context.LibraryBranches.ToListAsync(), "Id", "BranchName")
+            };
 
-            ViewBag.CurrentSearch = searchString;
-            ViewBag.CurrentGenre = genre;
-
-            return View(books);
+            return View(viewModel);
         }
 
         // GET: Books/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var book = await _context.Books
                 .Include(b => b.Author)
+                .Include(b => b.Category)
                 .Include(b => b.LibraryBranch)
+                .Include(b => b.Reviews)
+                    .ThenInclude(r => r.Customer)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (book == null)
-            {
                 return NotFound();
-            }
 
             var viewModel = new BookDetailsViewModel
             {
@@ -99,15 +133,25 @@ namespace LibraryManagementSystem.Controllers
                 PublicationDate = book.PublicationDate,
                 Publisher = book.Publisher,
                 PageCount = book.PageCount,
-                Genre = book.Genre,
+                Language = book.Language,
                 CoverImageUrl = book.CoverImageUrl,
+                Price = book.Price,
                 AvailableCopies = book.AvailableCopies,
                 TotalCopies = book.TotalCopies,
-                CreatedDate = book.CreatedDate,
                 AuthorId = book.AuthorId,
                 AuthorName = book.Author != null ? $"{book.Author.FirstName} {book.Author.LastName}" : "Unknown",
+                CategoryId = book.CategoryId,
+                CategoryName = book.Category?.Name,
                 LibraryBranchId = book.LibraryBranchId,
-                LibraryBranchName = book.LibraryBranch?.BranchName
+                LibraryBranchName = book.LibraryBranch?.BranchName,
+                Author = book.Author,
+                Category = book.Category,
+                LibraryBranch = book.LibraryBranch,
+                Reviews = book.Reviews,
+                AverageRating = book.Reviews.Any() ? book.Reviews.Average(r => r.Rating) : 0,
+                ReviewCount = book.Reviews.Count,
+                CreatedDate = book.CreatedDate,
+                UpdatedDate = book.UpdatedDate
             };
 
             return View(viewModel);
@@ -118,21 +162,10 @@ namespace LibraryManagementSystem.Controllers
         {
             var viewModel = new BookCreateViewModel
             {
-                Authors = new SelectList(
-                    await _context.Authors
-                        .OrderBy(a => a.LastName)
-                        .ThenBy(a => a.FirstName)
-                        .Select(a => new { a.Id, FullName = a.FirstName + " " + a.LastName })
-                        .ToListAsync(),
-                    "Id", "FullName"),
-                LibraryBranches = new SelectList(
-                    await _context.LibraryBranches
-                        .Where(b => b.IsActive)
-                        .OrderBy(b => b.BranchName)
-                        .ToListAsync(),
-                    "Id", "BranchName")
+                Authors = new SelectList(await _context.Authors.Select(a => new { a.Id, Name = a.FirstName + " " + a.LastName }).ToListAsync(), "Id", "Name"),
+                Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name"),
+                LibraryBranches = new SelectList(await _context.LibraryBranches.ToListAsync(), "Id", "BranchName")
             };
-
             return View(viewModel);
         }
 
@@ -143,50 +176,44 @@ namespace LibraryManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check for duplicate ISBN
                 if (await _context.Books.AnyAsync(b => b.ISBN == viewModel.ISBN))
                 {
                     ModelState.AddModelError("ISBN", "A book with this ISBN already exists.");
+                    viewModel.Authors = new SelectList(await _context.Authors.Select(a => new { a.Id, Name = a.FirstName + " " + a.LastName }).ToListAsync(), "Id", "Name");
+                    viewModel.Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name");
+                    viewModel.LibraryBranches = new SelectList(await _context.LibraryBranches.ToListAsync(), "Id", "BranchName");
+                    return View(viewModel);
                 }
-                else
-                {
-                    var book = new Book
-                    {
-                        Title = viewModel.Title,
-                        ISBN = viewModel.ISBN,
-                        Description = viewModel.Description,
-                        PublicationDate = viewModel.PublicationDate,
-                        Publisher = viewModel.Publisher,
-                        PageCount = viewModel.PageCount,
-                        Genre = viewModel.Genre,
-                        CoverImageUrl = viewModel.CoverImageUrl,
-                        AvailableCopies = viewModel.AvailableCopies,
-                        TotalCopies = viewModel.TotalCopies,
-                        AuthorId = viewModel.AuthorId,
-                        LibraryBranchId = viewModel.LibraryBranchId,
-                        CreatedDate = DateTime.UtcNow
-                    };
 
-                    _context.Add(book);
-                    await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Book created successfully!";
-                    return RedirectToAction(nameof(Index));
-                }
+                var book = new Book
+                {
+                    Title = viewModel.Title,
+                    ISBN = viewModel.ISBN,
+                    Description = viewModel.Description,
+                    PublicationDate = viewModel.PublicationDate,
+                    Publisher = viewModel.Publisher,
+                    PageCount = viewModel.PageCount,
+                    Language = viewModel.Language,
+                    CoverImageUrl = viewModel.CoverImageUrl,
+                    Price = viewModel.Price,
+                    AvailableCopies = viewModel.AvailableCopies,
+                    TotalCopies = viewModel.TotalCopies,
+                    AuthorId = viewModel.AuthorId,
+                    CategoryId = viewModel.CategoryId,
+                    LibraryBranchId = viewModel.LibraryBranchId,
+                    CreatedDate = DateTime.UtcNow
+                };
+
+                _context.Add(book);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Book created successfully!";
+                return RedirectToAction(nameof(Index));
             }
 
-            viewModel.Authors = new SelectList(
-                await _context.Authors
-                    .OrderBy(a => a.LastName)
-                    .ThenBy(a => a.FirstName)
-                    .Select(a => new { a.Id, FullName = a.FirstName + " " + a.LastName })
-                    .ToListAsync(),
-                "Id", "FullName", viewModel.AuthorId);
-            viewModel.LibraryBranches = new SelectList(
-                await _context.LibraryBranches
-                    .Where(b => b.IsActive)
-                    .OrderBy(b => b.BranchName)
-                    .ToListAsync(),
-                "Id", "BranchName", viewModel.LibraryBranchId);
-
+            viewModel.Authors = new SelectList(await _context.Authors.Select(a => new { a.Id, Name = a.FirstName + " " + a.LastName }).ToListAsync(), "Id", "Name");
+            viewModel.Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name");
+            viewModel.LibraryBranches = new SelectList(await _context.LibraryBranches.ToListAsync(), "Id", "BranchName");
             return View(viewModel);
         }
 
@@ -194,15 +221,11 @@ namespace LibraryManagementSystem.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var book = await _context.Books.FindAsync(id);
             if (book == null)
-            {
                 return NotFound();
-            }
 
             var viewModel = new BookEditViewModel
             {
@@ -213,25 +236,17 @@ namespace LibraryManagementSystem.Controllers
                 PublicationDate = book.PublicationDate,
                 Publisher = book.Publisher,
                 PageCount = book.PageCount,
-                Genre = book.Genre,
+                Language = book.Language,
                 CoverImageUrl = book.CoverImageUrl,
+                Price = book.Price,
                 AvailableCopies = book.AvailableCopies,
                 TotalCopies = book.TotalCopies,
                 AuthorId = book.AuthorId,
+                CategoryId = book.CategoryId,
                 LibraryBranchId = book.LibraryBranchId,
-                Authors = new SelectList(
-                    await _context.Authors
-                        .OrderBy(a => a.LastName)
-                        .ThenBy(a => a.FirstName)
-                        .Select(a => new { a.Id, FullName = a.FirstName + " " + a.LastName })
-                        .ToListAsync(),
-                    "Id", "FullName", book.AuthorId),
-                LibraryBranches = new SelectList(
-                    await _context.LibraryBranches
-                        .Where(b => b.IsActive)
-                        .OrderBy(b => b.BranchName)
-                        .ToListAsync(),
-                    "Id", "BranchName", book.LibraryBranchId)
+                Authors = new SelectList(await _context.Authors.Select(a => new { a.Id, Name = a.FirstName + " " + a.LastName }).ToListAsync(), "Id", "Name"),
+                Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name"),
+                LibraryBranches = new SelectList(await _context.LibraryBranches.ToListAsync(), "Id", "BranchName")
             };
 
             return View(viewModel);
@@ -243,69 +258,58 @@ namespace LibraryManagementSystem.Controllers
         public async Task<IActionResult> Edit(int id, BookEditViewModel viewModel)
         {
             if (id != viewModel.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
-                if (await _context.Books.AnyAsync(b => b.ISBN == viewModel.ISBN && b.Id != id))
+                try
                 {
-                    ModelState.AddModelError("ISBN", "A book with this ISBN already exists.");
+                    // Check for duplicate ISBN (excluding current book)
+                    if (await _context.Books.AnyAsync(b => b.ISBN == viewModel.ISBN && b.Id != id))
+                    {
+                        ModelState.AddModelError("ISBN", "A book with this ISBN already exists.");
+                        viewModel.Authors = new SelectList(await _context.Authors.Select(a => new { a.Id, Name = a.FirstName + " " + a.LastName }).ToListAsync(), "Id", "Name");
+                        viewModel.Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name");
+                        viewModel.LibraryBranches = new SelectList(await _context.LibraryBranches.ToListAsync(), "Id", "BranchName");
+                        return View(viewModel);
+                    }
+
+                    var book = await _context.Books.FindAsync(id);
+                    if (book == null)
+                        return NotFound();
+
+                    book.Title = viewModel.Title;
+                    book.ISBN = viewModel.ISBN;
+                    book.Description = viewModel.Description;
+                    book.PublicationDate = viewModel.PublicationDate;
+                    book.Publisher = viewModel.Publisher;
+                    book.PageCount = viewModel.PageCount;
+                    book.Language = viewModel.Language;
+                    book.CoverImageUrl = viewModel.CoverImageUrl;
+                    book.Price = viewModel.Price;
+                    book.AvailableCopies = viewModel.AvailableCopies;
+                    book.TotalCopies = viewModel.TotalCopies;
+                    book.AuthorId = viewModel.AuthorId;
+                    book.CategoryId = viewModel.CategoryId;
+                    book.LibraryBranchId = viewModel.LibraryBranchId;
+                    book.UpdatedDate = DateTime.UtcNow;
+
+                    _context.Update(book);
+                    await _context.SaveChangesAsync();
+                    TempData["Success"] = "Book updated successfully!";
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    try
-                    {
-                        var book = await _context.Books.FindAsync(id);
-                        if (book == null)
-                        {
-                            return NotFound();
-                        }
-
-                        book.Title = viewModel.Title;
-                        book.ISBN = viewModel.ISBN;
-                        book.Description = viewModel.Description;
-                        book.PublicationDate = viewModel.PublicationDate;
-                        book.Publisher = viewModel.Publisher;
-                        book.PageCount = viewModel.PageCount;
-                        book.Genre = viewModel.Genre;
-                        book.CoverImageUrl = viewModel.CoverImageUrl;
-                        book.AvailableCopies = viewModel.AvailableCopies;
-                        book.TotalCopies = viewModel.TotalCopies;
-                        book.AuthorId = viewModel.AuthorId;
-                        book.LibraryBranchId = viewModel.LibraryBranchId;
-
-                        _context.Update(book);
-                        await _context.SaveChangesAsync();
-                        TempData["SuccessMessage"] = "Book updated successfully!";
-                        return RedirectToAction(nameof(Index));
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!await BookExists(viewModel.Id))
-                        {
-                            return NotFound();
-                        }
-                        throw;
-                    }
+                    if (!BookExists(viewModel.Id))
+                        return NotFound();
+                    throw;
                 }
+                return RedirectToAction(nameof(Index));
             }
 
-            viewModel.Authors = new SelectList(
-                await _context.Authors
-                    .OrderBy(a => a.LastName)
-                    .ThenBy(a => a.FirstName)
-                    .Select(a => new { a.Id, FullName = a.FirstName + " " + a.LastName })
-                    .ToListAsync(),
-                "Id", "FullName", viewModel.AuthorId);
-            viewModel.LibraryBranches = new SelectList(
-                await _context.LibraryBranches
-                    .Where(b => b.IsActive)
-                    .OrderBy(b => b.BranchName)
-                    .ToListAsync(),
-                "Id", "BranchName", viewModel.LibraryBranchId);
-
+            viewModel.Authors = new SelectList(await _context.Authors.Select(a => new { a.Id, Name = a.FirstName + " " + a.LastName }).ToListAsync(), "Id", "Name");
+            viewModel.Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name");
+            viewModel.LibraryBranches = new SelectList(await _context.LibraryBranches.ToListAsync(), "Id", "BranchName");
             return View(viewModel);
         }
 
@@ -313,41 +317,17 @@ namespace LibraryManagementSystem.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var book = await _context.Books
                 .Include(b => b.Author)
-                .Include(b => b.LibraryBranch)
+                .Include(b => b.Category)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (book == null)
-            {
                 return NotFound();
-            }
 
-            var viewModel = new BookDetailsViewModel
-            {
-                Id = book.Id,
-                Title = book.Title,
-                ISBN = book.ISBN,
-                Description = book.Description,
-                PublicationDate = book.PublicationDate,
-                Publisher = book.Publisher,
-                PageCount = book.PageCount,
-                Genre = book.Genre,
-                CoverImageUrl = book.CoverImageUrl,
-                AvailableCopies = book.AvailableCopies,
-                TotalCopies = book.TotalCopies,
-                CreatedDate = book.CreatedDate,
-                AuthorId = book.AuthorId,
-                AuthorName = book.Author != null ? $"{book.Author.FirstName} {book.Author.LastName}" : "Unknown",
-                LibraryBranchId = book.LibraryBranchId,
-                LibraryBranchName = book.LibraryBranch?.BranchName
-            };
-
-            return View(viewModel);
+            return View(book);
         }
 
         // POST: Books/Delete/5
@@ -358,16 +338,24 @@ namespace LibraryManagementSystem.Controllers
             var book = await _context.Books.FindAsync(id);
             if (book != null)
             {
+                // Check if book has active loans
+                var hasActiveLoans = await _context.BookLoans.AnyAsync(l => l.BookId == id && l.Status == LoanStatus.Active);
+                if (hasActiveLoans)
+                {
+                    TempData["Error"] = "Cannot delete book with active loans.";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 _context.Books.Remove(book);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Book deleted successfully!";
+                TempData["Success"] = "Book deleted successfully!";
             }
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<bool> BookExists(int id)
+        private bool BookExists(int id)
         {
-            return await _context.Books.AnyAsync(e => e.Id == id);
+            return _context.Books.Any(e => e.Id == id);
         }
     }
 }

@@ -1,0 +1,105 @@
+@model LibraryManagementSystem.ViewModels.AuthorEditViewModel
+@{
+    ViewData["Title"] = "Edit Author";
+}
+
+<div class="max-w-4xl mx-auto">
+    <div class="md:flex md:items-center md:justify-between mb-6">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl">
+                <i class="fas fa-user-edit text-indigo-600 mr-2"></i>Edit Author
+            </h2>
+        </div>
+        <div>
+            <a href="/Authors" class="inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Authors
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+        <form asp-action="Edit" method="post" class="p-6 space-y-6">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- First Name -->
+                <div>
+                    <label asp-for="FirstName" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="FirstName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border">
+                    <span asp-validation-for="FirstName" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Last Name -->
+                <div>
+                    <label asp-for="LastName" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="LastName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border">
+                    <span asp-validation-for="LastName" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Date of Birth -->
+                <div>
+                    <label asp-for="DateOfBirth" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="DateOfBirth" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border">
+                    <span asp-validation-for="DateOfBirth" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Nationality -->
+                <div>
+                    <label asp-for="Nationality" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="Nationality" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border">
+                    <span asp-validation-for="Nationality" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label asp-for="Email" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="Email" type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border">
+                    <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Website -->
+                <div>
+                    <label asp-for="WebsiteUrl" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="WebsiteUrl" type="url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border">
+                    <span asp-validation-for="WebsiteUrl" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Image URL -->
+                <div class="md:col-span-2">
+                    <label asp-for="ImageUrl" class="block text-sm font-medium text-gray-700"></label>
+                    <input asp-for="ImageUrl" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border">
+                    <span asp-validation-for="ImageUrl" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Biography -->
+                <div class="md:col-span-2">
+                    <label asp-for="Biography" class="block text-sm font-medium text-gray-700"></label>
+                    <textarea asp-for="Biography" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"></textarea>
+                    <span asp-validation-for="Biography" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Is Active -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center">
+                        <input asp-for="IsActive" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <label asp-for="IsActive" class="ml-2 block text-sm text-gray-900"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-4 pt-4 border-t">
+                <a href="/Authors" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700">
+                    <i class="fas fa-save mr-2"></i> Update Author
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
