@@ -3,186 +3,223 @@
     ViewData["Title"] = "Books";
 }
 
-<div class="space-y-6">
-    <!-- Header -->
-    <div class="md:flex md:items-center md:justify-between">
-        <div class="min-w-0 flex-1">
-            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl">
-                <i class="fas fa-book text-primary-600 mr-2"></i>Books
+<div class="space-y-8">
+
+    <!-- ================= HEADER ================= -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <i class="fas fa-book text-primary-600"></i>
+                Library Books
             </h2>
-            <p class="mt-1 text-sm text-gray-500">Manage your library book collection</p>
+            <p class="text-gray-500 mt-1">Manage and monitor your book inventory efficiently</p>
         </div>
-        <div class="mt-4 flex md:ml-4 md:mt-0">
-            <a href="/Books/Create" class="inline-flex items-center rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 transition">
-                <i class="fas fa-plus mr-2"></i> Add Book
-            </a>
-        </div>
+
+        <a href="/Books/Create"
+           class="inline-flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-lg shadow hover:bg-primary-700 transition duration-200">
+            <i class="fas fa-plus"></i>
+            Add New Book
+        </a>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white shadow rounded-lg p-4">
+
+    <!-- ================= FILTER CARD ================= -->
+    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
         <form method="get" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+
+            <!-- Search -->
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
-                <input type="text" name="searchTerm" value="@Model.SearchTerm" 
-                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 border"
-                       placeholder="Title, ISBN, or author...">
+                <input type="text"
+                       name="searchTerm"
+                       value="@Model.SearchTerm"
+                       placeholder="Search by title, ISBN or author..."
+                       class="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500 px-3 py-2 shadow-sm border">
             </div>
+
+            <!-- Category -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <select name="categoryFilter" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 border">
-                    <option value="">All Categories</option>
-                    @if (Model.Categories != null)
+                <select name="categoryFilter"
+                        class="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500 px-3 py-2 shadow-sm border">
+                    <option value="">All</option>
+                    @foreach (var cat in Model.Categories ?? Enumerable.Empty<SelectListItem>())
                     {
-                        @foreach (var cat in Model.Categories)
-                        {
-                            <option value="@cat.Value" selected="@(Model.CategoryFilter.ToString() == cat.Value)">@cat.Text</option>
-                        }
+                        <option value="@cat.Value" selected="@(Model.CategoryFilter.ToString() == cat.Value)">
+                            @cat.Text
+                        </option>
                     }
                 </select>
             </div>
+
+            <!-- Sort -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
-                <select name="sortBy" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 border">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Sort</label>
+                <select name="sortBy"
+                        class="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500 px-3 py-2 shadow-sm border">
                     <option value="">Title (A-Z)</option>
                     <option value="title_desc" selected="@(Model.SortBy == "title_desc")">Title (Z-A)</option>
                     <option value="author" selected="@(Model.SortBy == "author")">Author</option>
-                    <option value="newest" selected="@(Model.SortBy == "newest")">Newest First</option>
-                    <option value="oldest" selected="@(Model.SortBy == "oldest")">Oldest First</option>
+                    <option value="newest" selected="@(Model.SortBy == "newest")">Newest</option>
+                    <option value="oldest" selected="@(Model.SortBy == "oldest")">Oldest</option>
                 </select>
             </div>
-            <div class="flex items-end">
-                <label class="flex items-center">
-                    <input type="checkbox" name="availableOnly" value="true" class="h-4 w-4 text-primary-600 border-gray-300 rounded" @(Model.AvailableOnly == true ? "checked" : "")>
-                    <span class="ml-2 text-sm text-gray-700">Available Only</span>
-                </label>
+
+            <!-- Available Only -->
+            <div class="flex items-center mt-6">
+                <input type="checkbox"
+                       name="availableOnly"
+                       value="true"
+                       class="h-4 w-4 text-primary-600 rounded border-gray-300"
+                       @(Model.AvailableOnly == true ? "checked" : "")>
+                <span class="ml-2 text-sm text-gray-700">Available Only</span>
             </div>
-            <div class="flex items-end space-x-2">
-                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700">
-                    <i class="fas fa-search mr-2"></i> Search
+
+            <!-- Buttons -->
+            <div class="flex items-end gap-2">
+                <button type="submit"
+                        class="w-full bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition">
+                     Search
                 </button>
-                <a href="/Books" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+
+                <a href="/Books"
+                   class="w-full text-center bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition">
                     Clear
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- Results Info -->
+
+    <!-- ================= RESULTS INFO ================= -->
     <div class="flex justify-between items-center">
-        <p class="text-sm text-gray-700">
-            Showing <span class="font-medium">@(((Model.PageNumber - 1) * Model.PageSize) + 1)</span> to 
-            <span class="font-medium">@Math.Min(Model.PageNumber * Model.PageSize, Model.TotalCount)</span> of 
-            <span class="font-medium">@Model.TotalCount</span> results
+        <p class="text-sm text-gray-600">
+            Showing
+            <span class="font-semibold">@(((Model.PageNumber - 1) * Model.PageSize) + 1)</span>
+            -
+            <span class="font-semibold">@Math.Min(Model.PageNumber * Model.PageSize, Model.TotalCount)</span>
+            of
+            <span class="font-semibold">@Model.TotalCount</span> books
         </p>
     </div>
 
-    <!-- Books Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        @foreach (var book in Model.Books)
-        {
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div class="relative h-48 bg-gray-200">
-                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
-                    {
-                        <img src="@book.CoverImageUrl" alt="@book.Title" class="w-full h-full object-cover">
-                    }
-                    else
-                    {
-                        <div class="w-full h-full flex items-center justify-center">
-                            <i class="fas fa-book text-gray-400 text-4xl"></i>
+
+    <!-- ================= BOOK GRID ================= -->
+    @if (Model.Books.Any())
+    {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            @foreach (var book in Model.Books)
+            {
+                <div class="bg-white rounded-2xl shadow hover:shadow-xl transition duration-300 overflow-hidden group">
+
+                    <!-- Cover -->
+                    <div class="relative h-56 bg-gray-100">
+                        @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                        {
+                            <img src="@book.CoverImageUrl"
+                                 alt="@book.Title"
+                                 class="w-full h-full object-contain group-hover:scale-105 transition duration-300">
+                        }
+                        else
+                        {
+                            <div class="flex items-center justify-center h-full text-gray-400">
+                                <i class="fas fa-book text-5xl"></i>
+                            </div>
+                        }
+
+                        <span class="absolute top-3 right-3 text-xs px-3 py-1 rounded-full font-semibold
+                            @(book.AvailableCopies > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")">
+                            @(book.AvailableCopies > 0 ? $"{book.AvailableCopies} Available" : "Out of Stock")
+                        </span>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-5 space-y-2">
+                        <h3 class="font-semibold text-lg text-gray-900 truncate">
+                            @book.Title
+                        </h3>
+
+                        <p class="text-sm text-gray-600">by @book.AuthorName</p>
+
+                        @if (!string.IsNullOrEmpty(book.CategoryName))
+                        {
+                            <span class="inline-block bg-primary-100 text-primary-700 text-xs px-2 py-1 rounded-full">
+                                @book.CategoryName
+                            </span>
+                        }
+
+                        <p class="text-xs text-gray-500">ISBN: @book.ISBN</p>
+
+                        @if (book.Price.HasValue)
+                        {
+                            <p class="text-lg font-bold text-primary-600">
+                                $@book.Price.Value.ToString("F2")
+                            </p>
+                        }
+
+                        <div class="flex gap-2 pt-3">
+                            <a href="/Books/Details/@book.Id"
+                               class="flex-1 text-center py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition">
+                                View
+                            </a>
+                            <a href="/Books/Edit/@book.Id"
+                               class="flex-1 text-center py-2 text-sm bg-primary-600 text-white hover:bg-primary-700 rounded-lg transition">
+                                Edit
+                            </a>
                         </div>
-                    }
-                    @if (book.AvailableCopies > 0)
-                    {
-                        <span class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                            @book.AvailableCopies Available
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                            Not Available
-                        </span>
-                    }
-                </div>
-                <div class="p-4">
-                    <h3 class="text-lg font-semibold text-gray-900 truncate">
-                        <a href="/Books/Details/@book.Id" class="hover:text-primary-600">@book.Title</a>
-                    </h3>
-                    <p class="text-sm text-gray-600 mt-1">by @book.AuthorName</p>
-                    @if (!string.IsNullOrEmpty(book.CategoryName))
-                    {
-                        <span class="inline-flex items-center rounded-full bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 mt-2">
-                            @book.CategoryName
-                        </span>
-                    }
-                    <p class="text-sm text-gray-500 mt-2">ISBN: @book.ISBN</p>
-                    @if (book.Price.HasValue)
-                    {
-                        <p class="text-lg font-bold text-primary-600 mt-2">$@book.Price.Value.ToString("F2")</p>
-                    }
-                    <div class="mt-4 flex space-x-2">
-                        <a href="/Books/Details/@book.Id" class="flex-1 text-center px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition">
-                            <i class="fas fa-eye mr-1"></i> View
-                        </a>
-                        <a href="/Books/Edit/@book.Id" class="flex-1 text-center px-3 py-2 text-sm bg-primary-100 hover:bg-primary-200 text-primary-700 rounded-md transition">
-                            <i class="fas fa-edit mr-1"></i> Edit
-                        </a>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-
-    @if (!Model.Books.Any())
+            }
+        </div>
+    }
+    else
     {
-        <div class="text-center py-12 bg-white rounded-lg shadow">
-            <i class="fas fa-book-open text-gray-400 text-5xl mb-4"></i>
-            <h3 class="text-lg font-medium text-gray-900">No books found</h3>
-            <p class="text-gray-500 mt-2">Try adjusting your search or filter to find what you're looking for.</p>
-            <a href="/Books/Create" class="mt-4 inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">
-                <i class="fas fa-plus mr-2"></i> Add New Book
+        <!-- Empty State -->
+        <div class="bg-white rounded-xl shadow-md p-12 text-center">
+            <i class="fas fa-book-open text-5xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-800">No Books Found</h3>
+            <p class="text-gray-500 mt-2">Try adjusting filters or add a new book.</p>
+
+            <a href="/Books/Create"
+               class="inline-block mt-6 bg-primary-600 text-white px-5 py-2 rounded-lg hover:bg-primary-700 transition">
+                Add New Book
             </a>
         </div>
     }
 
-    <!-- Pagination -->
+
+    <!-- ================= PAGINATION ================= -->
     @if (Model.TotalPages > 1)
     {
-        <nav class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg shadow">
-            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-sm text-gray-700">
-                        Page <span class="font-medium">@Model.PageNumber</span> of <span class="font-medium">@Model.TotalPages</span>
-                    </p>
-                </div>
-                <div>
-                    <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm">
-                        @if (Model.PageNumber > 1)
-                        {
-                            <a href="?pageNumber=@(Model.PageNumber - 1)&searchTerm=@Model.SearchTerm&categoryFilter=@Model.CategoryFilter&sortBy=@Model.SortBy&availableOnly=@Model.AvailableOnly" 
-                               class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                                <i class="fas fa-chevron-left"></i>
-                            </a>
-                        }
-                        @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
-                        {
-                            <a href="?pageNumber=@i&searchTerm=@Model.SearchTerm&categoryFilter=@Model.CategoryFilter&sortBy=@Model.SortBy&availableOnly=@Model.AvailableOnly" 
-                               class="relative inline-flex items-center px-4 py-2 text-sm font-semibold @(i == Model.PageNumber ? "bg-primary-600 text-white" : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50")">
-                                @i
-                            </a>
-                        }
-                        @if (Model.PageNumber < Model.TotalPages)
-                        {
-                            <a href="?pageNumber=@(Model.PageNumber + 1)&searchTerm=@Model.SearchTerm&categoryFilter=@Model.CategoryFilter&sortBy=@Model.SortBy&availableOnly=@Model.AvailableOnly" 
-                               class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                                <i class="fas fa-chevron-right"></i>
-                            </a>
-                        }
-                    </nav>
-                </div>
+        <div class="flex justify-center">
+            <div class="flex items-center gap-2 bg-white px-6 py-3 rounded-xl shadow">
+
+                @if (Model.PageNumber > 1)
+                {
+                    <a href="?pageNumber=@(Model.PageNumber - 1)&searchTerm=@Model.SearchTerm&categoryFilter=@Model.CategoryFilter&sortBy=@Model.SortBy&availableOnly=@Model.AvailableOnly"
+                       class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                }
+
+                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+                {
+                    <a href="?pageNumber=@i&searchTerm=@Model.SearchTerm&categoryFilter=@Model.CategoryFilter&sortBy=@Model.SortBy&availableOnly=@Model.AvailableOnly"
+                       class="px-4 py-1 rounded-lg font-medium
+                            @(i == Model.PageNumber ? "bg-primary-600 text-white" : "bg-gray-100 hover:bg-gray-200")">
+                        @i
+                    </a>
+                }
+
+                @if (Model.PageNumber < Model.TotalPages)
+                {
+                    <a href="?pageNumber=@(Model.PageNumber + 1)&searchTerm=@Model.SearchTerm&categoryFilter=@Model.CategoryFilter&sortBy=@Model.SortBy&availableOnly=@Model.AvailableOnly"
+                       class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                }
             </div>
-        </nav>
+        </div>
     }
+
 </div>
