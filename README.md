@@ -1,11 +1,11 @@
-# 📚 Library Management System  
+# Library Management System  
 ### ASP.NET Core MVC • Entity Framework Core • SQLite • Tailwind CSS  
 
 > A full-stack database-driven Library Management System built using ASP.NET Core MVC with complete CRUD functionality, relational modeling, migrations, and structured seeding.
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Divyesh Hirapara**  
 CSCI 6809 – Advanced Applications Development  
@@ -14,7 +14,7 @@ Vancouver, Canada
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 This project is a fully functional **Library Management System** developed using:
 
@@ -25,16 +25,16 @@ This project is a fully functional **Library Management System** developed using
 
 The application replaces hard-coded mock data with a real relational database and provides complete **CRUD (Create, Read, Update, Delete)** functionality for:
 
-- 📖 Books  
-- ✍️ Authors  
-- 👤 Customers  
-- 🏢 Library Branches  
+- Books  
+- Authors  
+- Customers  
+- Library Branches  
 
 The system uses proper database migrations, foreign key relationships, validation, and automatic data seeding.
 
 ---
 
-## 🎯 Project Objectives
+## Project Objectives
 
 - Replace hard-coded data with persistent SQLite database
 - Implement Entity Framework Core with migrations
@@ -46,7 +46,7 @@ The system uses proper database migrations, foreign key relationships, validatio
 
 ---
 
-## 🏗️ Technology Stack
+## Technology Stack
 
 ### Backend
 - ASP.NET Core MVC
@@ -60,11 +60,11 @@ The system uses proper database migrations, foreign key relationships, validatio
 
 ---
 
-## 🧱 System Architecture
+## System Architecture
 
 The project follows the **MVC (Model–View–Controller)** pattern.
 
-### 📂 Folder Structure
+### Folder Structure
 
 ```bash
 LibraryManagementSystem/
@@ -89,7 +89,7 @@ LibraryManagementSystem/
 
 ---
 
-## 🗄️ Database Design
+## Database Design
 
 ### Core Entities
 
@@ -115,31 +115,31 @@ LibraryManagementSystem/
 
 ---
 
-## 🚀 Features
+## Features
 
-### 📖 Books
+### Books
 - Add, edit, delete books
 - Search by title, ISBN, author
 - Filter by genre
 - ISBN uniqueness validation
 - Dropdown for Author & Branch
 
-### ✍️ Authors
+### Authors
 - Full CRUD
 - Prevent deletion if books exist
 
-### 👤 Customers
+### Customers
 - Unique email validation
 - Optional preferred branch
 - Membership tracking
 
-### 🏢 Library Branches
+### Library Branches
 - Manage branch details
 - Display related book/member counts
 
 ---
 
-## 🔄 Database Migrations & Seeding
+## Database Migrations & Seeding
 
 The application automatically:
 
@@ -156,9 +156,9 @@ Database/library.db
 
 ---
 
-## 🛠️ Setup Instructions
+### Setup Instructions
 
-### ✅ Prerequisites
+### Prerequisites
 
 - .NET SDK installed
 - EF Core CLI tools (optional but recommended)
@@ -171,7 +171,7 @@ dotnet tool install --global dotnet-ef
 
 ---
 
-### ▶️ Run the Project
+###  Run the Project
 
 ```bash
 dotnet restore
@@ -188,7 +188,7 @@ https://localhost:xxxx
 
 ---
 
-## ✅ Verification Checklist
+##  Verification Checklist
 
 - [ ] Database file created
 - [ ] Tables generated
@@ -199,7 +199,7 @@ https://localhost:xxxx
 
 ---
 
-## 🔐 Data Validation
+## Data Validation
 
 Implemented using:
 
@@ -212,7 +212,7 @@ Implemented using:
 
 ---
 
-## 🎨 UI Design
+## UI Design
 
 - Responsive layout
 - Clean table designs
@@ -222,7 +222,7 @@ Implemented using:
 
 ---
 
-## 📈 Future Enhancements
+## Future Enhancements
 
 ### Phase B
 - Book loan system (Borrow/Return)
@@ -239,7 +239,7 @@ Implemented using:
 
 ---
 
-## ⚠️ Current Limitations
+## Current Limitations
 
 - No authentication
 - No loan tracking (Phase A only)
@@ -248,13 +248,13 @@ Implemented using:
 
 ---
 
-## 📄 License
+## License
 
 This project is developed for academic purposes.
 
 ---
 
-## ⭐ Project Highlights
+## Project Highlights
 
 - Real database integration
 - Proper MVC architecture
