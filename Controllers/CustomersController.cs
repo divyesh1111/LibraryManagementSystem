@@ -256,7 +256,7 @@ namespace LibraryManagementSystem.Controllers
             {
                 try
                 {
-                    // Check for duplicate email (excluding current customer)
+
                     if (await _context.Customers.AnyAsync(c => c.Email == viewModel.Email && c.Id != id))
                     {
                         ModelState.AddModelError("Email", "A customer with this email already exists.");
