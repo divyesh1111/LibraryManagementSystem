@@ -1,0 +1,104 @@
+@model LibraryManagementSystem.ViewModels.Auth.ManageAccountViewModel
+@{
+    ViewData["Title"] = "Manage Account";
+}
+
+<div class="max-w-3xl mx-auto py-8">
+    <!-- Header -->
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl">
+                <i class="fas fa-user-cog text-primary-600 mr-2"></i>My Account
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">Manage your account settings</p>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="mb-6 rounded-md bg-green-50 p-4">
+            <div class="flex">
+                <i class="fas fa-check-circle text-green-400 mr-3"></i>
+                <p class="text-sm text-green-700">@TempData["SuccessMessage"]</p>
+            </div>
+        </div>
+    }
+
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <!-- Profile Header -->
+        <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-8">
+            <div class="flex items-center">
+                <div class="h-20 w-20 rounded-full bg-white flex items-center justify-center text-primary-600 text-3xl font-bold">
+                    @(Model.FullName?.FirstOrDefault() ?? 'U')
+                </div>
+                <div class="ml-6">
+                    <h3 class="text-xl font-semibold text-white">@Model.FullName</h3>
+                    <p class="text-primary-100">@Model.Email</p>
+                    <span class="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <i class="fas fa-check-circle mr-1"></i> Active Member
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="px-6 py-6">
+            <form asp-action="Manage" method="post" class="space-y-6">
+                <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm"></div>
+
+                <div>
+                    <label asp-for="FullName" class="block text-sm font-medium text-gray-700">
+                        <i class="fas fa-user mr-1 text-gray-400"></i> Full Name
+                    </label>
+                    <input asp-for="FullName" type="text" 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" />
+                    <span asp-validation-for="FullName" class="text-red-500 text-xs"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Email" class="block text-sm font-medium text-gray-700">
+                        <i class="fas fa-envelope mr-1 text-gray-400"></i> Email Address
+                    </label>
+                    <input asp-for="Email" type="email" disabled
+                           class="mt-1 block w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-500" />
+                    <p class="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button type="submit" 
+                            class="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition">
+                        <i class="fas fa-save mr-2"></i> Save Changes
+                    </button>
+                    <a href="/" 
+                       class="flex-1 flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Home
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Account Info Card -->
+    <div class="mt-6 bg-white shadow rounded-lg p-6">
+        <h4 class="text-lg font-medium text-gray-900 mb-4">
+            <i class="fas fa-info-circle text-primary-500 mr-2"></i>Account Information
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-xs text-gray-500 uppercase tracking-wide">Account Type</p>
+                <p class="mt-1 text-sm font-semibold text-gray-900">
+                    @(User.IsInRole("Admin") ? "Administrator" : User.IsInRole("Librarian") ? "Librarian" : "Member")
+                </p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-xs text-gray-500 uppercase tracking-wide">Member Since</p>
+                <p class="mt-1 text-sm font-semibold text-gray-900">@DateTime.Now.ToString("MMMM yyyy")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

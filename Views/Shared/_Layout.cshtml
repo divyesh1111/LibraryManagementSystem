@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Library Management System</title>
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -27,124 +29,191 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <style>
-        .sidebar-link:hover { background-color: rgba(59, 130, 246, 0.1); }
-        .sidebar-link.active { background-color: rgba(59, 130, 246, 0.2); border-left: 3px solid #3b82f6; }
-    </style>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body class="h-full bg-gray-50">
     <div class="min-h-full">
-        <!-- Navigation -->
-        <nav class="bg-gradient-to-r from-primary-700 to-primary-900 shadow-lg">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex h-16 items-center justify-between">
-                    <div class="flex items-center">
-                        <a href="/" class="flex items-center space-x-3">
-                            <i class="fas fa-book-open text-white text-2xl"></i>
-                            <span class="text-white font-bold text-xl">Library Management</span>
+    <!-- Navigation -->
+    <nav class="bg-primary-600 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-white font-bold text-xl flex items-center">
+                            <i class="fas fa-book-reader mr-2"></i>
+                            Library System
                         </a>
                     </div>
-                    <div class="hidden md:block">
-                        <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="/" class="text-white hover:bg-primary-600 px-3 py-2 rounded-md text-sm font-medium transition">
-                                <i class="fas fa-home mr-1"></i> Dashboard
-                            </a>
-                            <a href="/Books" class="text-primary-100 hover:bg-primary-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">
-                                <i class="fas fa-book mr-1"></i> Books
-                            </a>
-                            <a href="/Authors" class="text-primary-100 hover:bg-primary-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">
-                                <i class="fas fa-pen-fancy mr-1"></i> Authors
-                            </a>
-                            <a href="/Customers" class="text-primary-100 hover:bg-primary-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">
-                                <i class="fas fa-users mr-1"></i> Customers
-                            </a>
-                            <a href="/LibraryBranches" class="text-primary-100 hover:bg-primary-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">
-                                <i class="fas fa-building mr-1"></i> Branches
-                            </a>
-                            <a href="/BookLoans" class="text-primary-100 hover:bg-primary-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">
+                    
+                    <!-- Main Navigation -->
+                    <div class="hidden sm:ml-8 sm:flex sm:space-x-4">
+                        <a href="/" class="text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
+                            <i class="fas fa-home mr-1"></i> Home
+                        </a>
+                        <a href="/Books" class="text-primary-100 hover:bg-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
+                            <i class="fas fa-book mr-1"></i> Books
+                        </a>
+                            <a href="/Authors" class="text-primary-100 hover:bg-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
+                            <i class="fas fa-pen-fancy mr-1"></i> Authors
+                        </a>
+                        <a href="/Categories" class="text-primary-100 hover:bg-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
+                            <i class="fas fa-tags mr-1"></i> Categories
+                        </a>
+                        <a href="/LibraryBranches" class="text-primary-100 hover:bg-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
+                            <i class="fas fa-building mr-1"></i> Branches
+                        </a>
+                        @if (User.Identity?.IsAuthenticated == true && (User.IsInRole("Admin") || User.IsInRole("Librarian")))
+                        {
+                            <a href="/BookLoans" class="text-primary-100 hover:bg-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
                                 <i class="fas fa-exchange-alt mr-1"></i> Loans
                             </a>
-                            <a href="/Categories" class="text-primary-100 hover:bg-primary-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">
-                                <i class="fas fa-tags mr-1"></i> Categories
+                            <a href="/Customers" class="text-primary-100 hover:bg-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
+                                <i class="fas fa-users mr-1"></i> Customers
                             </a>
+                        }
+                    </div>
+                </div>
+                
+                <!-- Right Side - User Menu -->
+                <div class="flex items-center">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="relative" x-data="{ open: false }">
+                            <button onclick="toggleUserMenu()" class="flex items-center text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium transition">
+                                <i class="fas fa-user-circle mr-2 text-lg"></i>
+                                <span>@User.Identity.Name</span>
+                                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            </button>
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                                <div class="py-1">
+                                    <a href="/Account/Manage" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-cog mr-2"></i> Manage Account
+                                    </a>
+                                    <hr class="my-1">
+                                    <form asp-controller="Account" asp-action="Logout" method="post">
+                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Mobile menu button -->
-                    <div class="md:hidden">
-                        <button type="button" onclick="toggleMobileMenu()" class="text-white hover:bg-primary-600 p-2 rounded-md">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                    </div>
+                    }
+                    else
+                    {
+                        <a href="/Account/Login" class="text-primary-100 hover:bg-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition flex items-center">
+                            <i class="fas fa-sign-in-alt mr-1"></i> Login
+                        </a>
+                        <a href="/Account/Register" class="ml-2 bg-white text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-md text-sm font-medium transition flex items-center">
+                            <i class="fas fa-user-plus mr-1"></i> Register
+                        </a>
+                    }
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="flex items-center sm:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-white hover:bg-primary-700 p-2 rounded-md">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
                 </div>
             </div>
-            <!-- Mobile menu -->
-            <div id="mobile-menu" class="hidden md:hidden bg-primary-800">
-                <div class="space-y-1 px-2 pb-3 pt-2">
-                    <a href="/" class="text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
-                    <a href="/Books" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Books</a>
-                    <a href="/Authors" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Authors</a>
-                    <a href="/Customers" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Customers</a>
-                    <a href="/LibraryBranches" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Branches</a>
-                    <a href="/BookLoans" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Loans</a>
-                    <a href="/Categories" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Categories</a>
-                </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden sm:hidden bg-primary-700">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/" class="text-white block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-home mr-2"></i> Home
+                </a>
+                <a href="/Books" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-book mr-2"></i> Books
+                </a>
+                <a href="/Authors" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-pen-fancy mr-2"></i> Authors
+                </a>
+                <a href="/Categories" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-tags mr-2"></i> Categories
+                </a>
+                <a href="/LibraryBranches" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-building mr-2"></i> Branches
+                </a>
+                @if (User.Identity?.IsAuthenticated == true && (User.IsInRole("Admin") || User.IsInRole("Librarian")))
+                {
+                    <a href="/BookLoans" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-exchange-alt mr-2"></i> Loans
+                    </a>
+                    <a href="/Customers" class="text-primary-100 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-users mr-2"></i> Customers
+                    </a>
+                }
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        <!-- Alert Messages -->
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <!-- Flash Messages -->
         @if (TempData["Success"] != null)
         {
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4">
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">@TempData["Success"]</span>
-                    <button onclick="this.parentElement.remove()" class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                        <i class="fas fa-times"></i>
-                    </button>
+            <div class="mb-4 rounded-md bg-green-50 p-4">
+                <div class="flex">
+                    <i class="fas fa-check-circle text-green-400 mr-3 mt-0.5"></i>
+                    <p class="text-sm text-green-700">@TempData["Success"]</p>
                 </div>
             </div>
         }
         @if (TempData["Error"] != null)
         {
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4">
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">@TempData["Error"]</span>
-                    <button onclick="this.parentElement.remove()" class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                        <i class="fas fa-times"></i>
-                    </button>
+            <div class="mb-4 rounded-md bg-red-50 p-4">
+                <div class="flex">
+                    <i class="fas fa-exclamation-circle text-red-400 mr-3 mt-0.5"></i>
+                    <p class="text-sm text-red-700">@TempData["Error"]</p>
                 </div>
             </div>
         }
+        
+        @RenderBody()
+    </main>
 
-        <!-- Main Content -->
-        <main class="py-6">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                @RenderBody()
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="bg-gray-800 mt-auto">
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <p class="text-gray-400 text-sm">
-                        &copy; @DateTime.Now.Year Library Management System. All rights reserved.
-                    </p>
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <p class="text-gray-500 text-sm">
+                    &copy; 2026 Library Management System. All rights reserved.
+                </p>
                     <div class="flex space-x-4 mt-4 md:mt-0">
                         <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook"></i></a>
                         <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
-                    </div>
                 </div>
             </div>
-        </footer>
-    </div>
+        </div>
+    </footer>
 
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+        function toggleUserMenu() {
+            document.getElementById('userMenu').classList.toggle('hidden');
         }
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            var userMenu = document.getElementById('userMenu');
+            if (userMenu && !e.target.closest('.relative')) {
+                userMenu.classList.add('hidden');
+            }
+        });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
