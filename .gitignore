@@ -17,7 +17,7 @@ obj/
 *.db
 *.db-shm
 *.db-wal
-appsettings.json
+
 
 ## User secrets
 secrets.json
@@ -33,3 +33,11 @@ secrets.json
 ## OS Files
 .DS_Store
 Thumbs.db
+
+appsettings.json
+appsettings.Test.json
+appsettings.*.json 
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.Release.json
