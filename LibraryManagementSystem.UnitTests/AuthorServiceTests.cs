@@ -16,11 +16,9 @@ namespace LibraryManagementSystem.UnitTests
             return new LibraryDbContext(opts);
         }
 
-        // Test 1
         [Fact]
         public async Task CreateAsync_ShouldAddAuthor_AndReturnWithId()
         {
-            // Arrange
             using var db = CreateDb();
             var svc = new AuthorService(db);
             var author = new Author
@@ -30,20 +28,16 @@ namespace LibraryManagementSystem.UnitTests
                 Nationality = "Indian"
             };
 
-            // Act
             var result = await svc.CreateAsync(author);
 
-            // Assert
             Assert.True(result.Id > 0);
             Assert.Equal("Rabindranath", result.FirstName);
             Assert.Equal(1, await db.Authors.CountAsync());
         }
 
-        // Test 2
         [Fact]
         public async Task DeleteAsync_ShouldFail_WhenAuthorHasBooks()
         {
-            // Arrange
             using var db = CreateDb();
             var svc = new AuthorService(db);
 
@@ -59,16 +53,13 @@ namespace LibraryManagementSystem.UnitTests
             });
             await db.SaveChangesAsync();
 
-            // Act
             var (ok, reason) = await svc.DeleteAsync(1);
 
-            // Assert
             Assert.False(ok);
             Assert.NotNull(reason);
             Assert.Contains("books", reason!.ToLower());
         }
 
-        // Test 3
         [Fact]
         public async Task DeleteAsync_ShouldSucceed_WhenAuthorHasNoBooks()
         {
@@ -79,20 +70,16 @@ namespace LibraryManagementSystem.UnitTests
             db.Authors.Add(new Author { Id = 1, FirstName = "A", LastName = "B" });
             await db.SaveChangesAsync();
 
-            // Act
             var (ok, reason) = await svc.DeleteAsync(1);
 
-            // Assert
             Assert.True(ok);
             Assert.Null(reason);
             Assert.Equal(0, await db.Authors.CountAsync());
         }
 
-        // Test 4
         [Fact]
         public async Task UpdateAsync_ShouldReturnFalse_WhenAuthorDoesNotExist()
         {
-            // Arrange
             using var db = CreateDb();
             var svc = new AuthorService(db);
 
@@ -102,18 +89,14 @@ namespace LibraryManagementSystem.UnitTests
                 LastName = "Author"
             };
 
-            // Act
             var result = await svc.UpdateAsync(999, author);
 
-            // Assert
             Assert.False(result);
         }
 
-        // Test 5
         [Fact]
         public async Task GetPagedAsync_ShouldReturnCorrectPage()
         {
-            // Arrange
             using var db = CreateDb();
             var svc = new AuthorService(db);
 
@@ -127,10 +110,8 @@ namespace LibraryManagementSystem.UnitTests
             }
             await db.SaveChangesAsync();
 
-            // Act
             var result = await svc.GetPagedAsync(null, null, 2, 5);
 
-            // Assert
             Assert.Equal(15, result.TotalCount);
             Assert.Equal(5, result.Items.Count);
             Assert.Equal(2, result.Page);
