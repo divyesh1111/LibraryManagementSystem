@@ -6,6 +6,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- IMPORTANT: exclude test projects from being compiled into the web project -->
+  <ItemGroup>
+    <Compile Remove="LibraryManagementSystem.UnitTests\**\*.cs" />
+    <Compile Remove="LibraryManagementSystem.IntegrationTests\**\*.cs" />
+
+    <Content Remove="LibraryManagementSystem.UnitTests\**\*" />
+    <Content Remove="LibraryManagementSystem.IntegrationTests\**\*" />
+
+    <None Remove="LibraryManagementSystem.UnitTests\**\*" />
+    <None Remove="LibraryManagementSystem.IntegrationTests\**\*" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
@@ -16,10 +28,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    
+
     <!-- Identity & Auth -->
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.2" />
+
+    <!-- Phase (c): API + Swagger + JWT -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
 </Project>
