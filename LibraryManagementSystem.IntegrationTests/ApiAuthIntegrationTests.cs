@@ -20,11 +20,10 @@ namespace LibraryManagementSystem.IntegrationTests
             });
         }
 
-        // Integration Test 17
+
         [Fact]
         public async Task Login_ShouldReturn200_AndToken_ForAdminUser()
         {
-            // Act
             var res = await _client.PostAsJsonAsync("/api/v1/auth/login",
                 new ApiLoginRequest
                 {
@@ -35,7 +34,7 @@ namespace LibraryManagementSystem.IntegrationTests
             var body = await res.Content.ReadAsStringAsync();
             var token = await res.Content.ReadFromJsonAsync<TokenResponse>();
 
-            // Assert
+            
             Assert.Equal(HttpStatusCode.OK, res.StatusCode);
             Assert.NotNull(token);
             Assert.False(string.IsNullOrWhiteSpace(token!.AccessToken));
@@ -43,11 +42,11 @@ namespace LibraryManagementSystem.IntegrationTests
             Assert.True(token.ExpiresAtUtc > DateTime.UtcNow);
         }
 
-        // Integration Test 18
+       
         [Fact]
         public async Task Login_ShouldReturn200_AndToken_ForMemberUser()
         {
-            // Act
+            
             var res = await _client.PostAsJsonAsync("/api/v1/auth/login",
                 new ApiLoginRequest
                 {
@@ -57,17 +56,16 @@ namespace LibraryManagementSystem.IntegrationTests
 
             var token = await res.Content.ReadFromJsonAsync<TokenResponse>();
 
-            // Assert
+        
             Assert.Equal(HttpStatusCode.OK, res.StatusCode);
             Assert.NotNull(token);
             Assert.False(string.IsNullOrWhiteSpace(token!.AccessToken));
         }
 
-        // Integration Test 19
         [Fact]
         public async Task Login_ShouldReturn401_ForWrongPassword()
         {
-            // Act
+         
             var res = await _client.PostAsJsonAsync("/api/v1/auth/login",
                 new ApiLoginRequest
                 {
@@ -75,15 +73,15 @@ namespace LibraryManagementSystem.IntegrationTests
                     Password = "WrongPassword!"
                 });
 
-            // Assert
+           
             Assert.Equal(HttpStatusCode.Unauthorized, res.StatusCode);
         }
 
-        // Integration Test 20
+ 
         [Fact]
         public async Task Login_ShouldReturn401_ForNonExistentUser()
         {
-            // Act
+           
             var res = await _client.PostAsJsonAsync("/api/v1/auth/login",
                 new ApiLoginRequest
                 {
@@ -91,15 +89,12 @@ namespace LibraryManagementSystem.IntegrationTests
                     Password = "Whatever123!"
                 });
 
-            // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, res.StatusCode);
         }
 
-        // Integration Test 21
         [Fact]
         public async Task Login_ShouldReturn400_WhenEmailIsEmpty()
         {
-            // Act
             var res = await _client.PostAsJsonAsync("/api/v1/auth/login",
                 new ApiLoginRequest
                 {
@@ -107,15 +102,12 @@ namespace LibraryManagementSystem.IntegrationTests
                     Password = "Admin123!"
                 });
 
-            // Assert
             Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
         }
 
-        // Integration Test 22
         [Fact]
         public async Task Login_ShouldReturn200_ForLibrarianUser()
         {
-            // Act
             var res = await _client.PostAsJsonAsync("/api/v1/auth/login",
                 new ApiLoginRequest
                 {
@@ -125,7 +117,6 @@ namespace LibraryManagementSystem.IntegrationTests
 
             var token = await res.Content.ReadFromJsonAsync<TokenResponse>();
 
-            // Assert
             Assert.Equal(HttpStatusCode.OK, res.StatusCode);
             Assert.NotNull(token);
             Assert.False(string.IsNullOrWhiteSpace(token!.AccessToken));
