@@ -18,7 +18,7 @@ namespace LibraryManagementSystem.IntegrationTests
                 {
                     ["ConnectionStrings:DefaultConnection"] = $"Data Source={tempDbPath}",
 
-                    // IMPORTANT: keep Issuer/Audience/Key consistent for both token generation and validation
+
                     ["Jwt:Issuer"] = "LibraryManagementSystem",
                     ["Jwt:Audience"] = "LibraryManagementSystem.ApiClients",
                     ["Jwt:Key"] = "CHANGE_ME_TO_A_32+_CHAR_RANDOM_SECRET_KEY",
